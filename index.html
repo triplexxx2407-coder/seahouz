@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <script>try{if(localStorage.getItem("shz-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script>
 <title>Sea Houz · Baja Ocean Residences</title>
-<meta name="description" content="Sea Houz: Direct Developer Access to luxury oceanfront residences in the Tijuana–Rosarito corridor." />
+<meta name="description" content="Sea Houz: Luxury oceanfront residences in the Tijuana–Rosarito corridor." />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -187,6 +187,10 @@
   .field label { position: absolute; left: 1rem; top: 1rem; font-size: .9rem; color: #8a93a6; pointer-events: none; transition: all .2s; }
   .field input:focus + label, .field input:not(:placeholder-shown) + label { top: .45rem; font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: #c9a45c; }
   .ccsel { height: 58px; flex: 0 0 auto; width: 104px; border-radius: 14px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.04); color: #f4f1ea; padding: 0 .5rem; font-family: inherit; font-size: .88rem; cursor: pointer; }
+  .homesel { width: 100%; height: 58px; border-radius: 14px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.04); color: #f4f1ea; padding: 0 1rem; font-family: inherit; font-size: .9rem; cursor: pointer; }
+  .homesel:focus { outline: none; border-color: #c9a45c; }
+  .homesel option { color: #10192e; background: #fff; }
+  html[data-theme="light"] .homesel { background: #fff; border-color: rgba(16,26,46,.16); color: #10192e; }
   .ccsel:focus { outline: none; border-color: #c9a45c; }
   .ccsel option { color: #10192e; background: #fff; }
   html[data-theme="light"] .ccsel { background: #fff; border-color: rgba(16,26,46,.16); color: #10192e; }
@@ -368,7 +372,7 @@
 
     <div class="order-2 sm:order-3 flex items-center gap-2.5 sm:gap-4 shrink-0">
       <div class="hidden lg:flex items-center gap-2 text-[.7rem] tracking-[.18em] uppercase text-mist">
-        <span class="live-dot"></span> Direct-to-Developer
+        <span class="live-dot"></span> KM 38 · Rosarito
       </div>
       <button id="themeBtn" class="lang" data-lang="en" role="switch" aria-checked="false" aria-label="Light / Dark mode" onclick="toggleTheme()" style="width:72px">
         <span class="lang-knob"></span>
@@ -391,14 +395,13 @@
       <div id="buyerHero" class="lg:col-span-5 lg:sticky lg:top-28">
         <div class="inline-flex items-center gap-2 rounded-full glass-gold px-3 py-1.5 text-[.66rem] tracking-[.22em] uppercase text-gold2">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.7L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
-          Direct Developer Access
+          Oceanfront Residences
         </div>
         <h1 class="font-serif text-[2.7rem] sm:text-6xl leading-[1.02] mt-6 text-[#f4f1ea]">
           Baja Ocean <br/><span class="italic gold-text">Residences</span>
         </h1>
         <p class="mt-6 text-[1.02rem] leading-relaxed text-[#b9bfcb] max-w-md">
           Oceanfront living at KM 38, Rosarito, on Baja's Pacific coast.
-          Deal directly with the developer. No brokers, no middlemen, no inflated fees.
         </p>
 
       </div>
@@ -516,7 +519,7 @@
           <!-- STEP 4 -->
           <div class="step relative" data-step="4">
             <h2 class="font-serif text-3xl sm:text-4xl mt-8 text-[#f4f1ea]">Unlock your Owner Direct Access.</h2>
-            <p class="text-sm text-mist mt-2">Your information is never sold or shared with agencies.</p>
+            <p class="text-sm text-mist mt-2">Your information is kept private.</p>
             <form id="leadForm" class="mt-7 grid gap-3" novalidate>
               <div class="field">
                 <input id="fName" type="text" placeholder=" " autocomplete="name" />
@@ -537,6 +540,13 @@
                   <label for="fEmail">Email</label>
                   <div class="err">Enter a valid email address.</div>
                 </div>
+              </div>
+              <div class="field homefield">
+                <select id="fHome" class="homesel">
+                  <option value="none">I don't own a Sea Houz condo yet</option>
+                  <option value="Vi Tower">I own a condo in Vi Tower</option>
+                  <option value="TAO Tower">I own a condo in TAO Tower</option>
+                </select>
               </div>
               <label class="flex items-start gap-3 text-xs text-mist mt-2 cursor-pointer select-none">
                 <input type="checkbox" checked class="mt-0.5 accent-[#c9a45c]" />
@@ -650,7 +660,7 @@
           <span class="live-dot"></span> En vivo · <span id="clock">--:--</span> · Corredor Tijuana–Rosarito
         </div>
         <h1 class="font-serif text-4xl sm:text-5xl mt-3 text-[#f4f1ea]">Centro de <span class="italic gold-text">Inteligencia</span></h1>
-        <p class="text-sm text-mist mt-2 max-w-xl">Tus compradores, tus datos, tu control. Cero inmobiliarias en medio: cada prospecto llega directo a ti.</p>
+        <p class="text-sm text-mist mt-2 max-w-xl">Todas las personas registradas en la página y lo que buscan.</p>
       </div>
       <div class="flex flex-wrap gap-2 items-center">
         <button class="filter-chip" data-range="7">7 días</button>
@@ -665,7 +675,7 @@
     <!-- KPIs -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-9">
       <div class="kpi glass">
-        <div class="flex items-center justify-between"><span class="tag text-mist">Total leads capturados</span>
+        <div class="flex items-center justify-between"><span class="tag text-mist">Total registrados</span>
           <span class="text-[.7rem] text-emerald-300 bg-emerald-400/10 border border-emerald-400/25 rounded-full px-2 py-0.5">▲ 18.4%</span></div>
         <div class="font-serif text-5xl mt-3 text-[#f4f1ea]" id="kpiLeads" data-count="1284">0</div>
         <div class="text-xs text-mist mt-2">vs. 1,084 el periodo anterior</div>
@@ -681,18 +691,16 @@
         </div>
       </div>
       <div class="kpi glass">
-        <div class="flex items-center justify-between"><span class="tag text-mist">Presupuesto promedio</span>
-          <span class="text-[.7rem] text-emerald-300 bg-emerald-400/10 border border-emerald-400/25 rounded-full px-2 py-0.5">▲ 6.1%</span></div>
-        <div class="font-serif text-5xl mt-3 text-[#f4f1ea]">$<span id="kpiBudget" data-count="742">0</span>K</div>
-        <div class="text-xs text-mist mt-2">USD · rango típico $540K – $775K</div>
-        <div class="mt-3 h-[38px] relative"><canvas id="spark2"></canvas></div>
+        <div class="flex items-center justify-between"><span class="tag text-mist">Con condominio</span></div>
+        <div class="font-serif text-5xl mt-3 text-[#f4f1ea]" id="kpiOwn" data-count="137">0</div>
+        <div class="text-xs text-mist mt-2">Vi Tower <span class="text-gold2 font-medium" id="kpiVi">78</span> · TAO Tower <span class="text-gold2 font-medium" id="kpiTao">59</span></div>
+        <div class="mt-4 h-1.5 rounded-full bg-white/5 overflow-hidden flex"><span id="barVi" style="width:57%;background:#c9a45c"></span><span id="barTao" style="width:43%;background:#3b5b9a"></span></div>
       </div>
       <div class="kpi glass-gold">
-        <div class="flex items-center justify-between"><span class="tag text-gold2">Listos para llamada</span>
-          <span class="text-[.7rem] text-[#f5a38f] bg-[#ef6c4f]/10 border border-[#ef6c4f]/30 rounded-full px-2 py-0.5">🔥 Prioridad</span></div>
-        <div class="font-serif text-5xl mt-3 gold-text" id="kpiReady" data-count="47">0</div>
-        <div class="text-xs text-[#c9ced8] mt-2">Pipeline estimado <span class="text-gold2 font-medium" id="kpiPipeline">$34.9M</span> · Comisión potencial <span class="text-gold2 font-medium">$987K</span></div>
-        <div class="mt-4 h-1.5 rounded-full bg-white/5 overflow-hidden"><span class="block h-full" style="width:72%;background:linear-gradient(90deg,#a87b3f,#e6cf98)"></span></div>
+        <div class="flex items-center justify-between"><span class="tag text-gold2">Sin condominio</span></div>
+        <div class="font-serif text-5xl mt-3 gold-text" id="kpiNoOwn" data-count="1147">0</div>
+        <div class="text-xs text-[#c9ced8] mt-2">Registrados que aún no tienen casa con nosotros</div>
+        <div class="mt-4 h-1.5 rounded-full bg-white/5 overflow-hidden"><span class="block h-full" id="barNo" style="width:89%;background:linear-gradient(90deg,#a87b3f,#e6cf98)"></span></div>
       </div>
     </div>
 
@@ -764,34 +772,34 @@
     <div class="glass rounded-[22px] mt-4 overflow-hidden">
       <div class="p-5 sm:p-7 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div class="tag text-mist">CRM Directo · Sin intermediarios</div>
+          <div class="tag text-mist">Registro</div>
           <h3 class="font-serif text-2xl mt-1 text-[#f4f1ea]">Leads Registrados</h3>
         </div>
         <div class="flex flex-wrap gap-2" id="crmFilters">
           <button class="filter-chip active" data-f="all">Todos</button>
-          <button class="filter-chip" data-f="hot">🔥 Calientes</button>
-          <button class="filter-chip" data-f="Vi Tower">Vi Tower</button>
-          <button class="filter-chip" data-f="TAO Tower">TAO Tower</button>
-          <button class="filter-chip" data-f="Airbnb investment">Inversión en Airbnb</button>
+          <button class="filter-chip" data-f="own">Con condominio</button>
+          <button class="filter-chip" data-f="none">Sin condominio</button>
+          <button class="filter-chip" data-f="Vi Tower">Torre Vi</button>
+          <button class="filter-chip" data-f="TAO Tower">Torre TAO</button>
         </div>
       </div>
       <div class="scroll-x">
         <table class="crm">
           <thead><tr>
-            <th>Prospecto</th><th>Origen</th><th>Interés</th><th>Indispensable</th><th>Objetivo</th><th>Presupuesto</th><th>Score</th><th>Estado</th><th>ID</th><th></th>
+            <th>Prospecto</th><th>Origen</th><th>Condominio</th><th>Interés</th><th>Indispensable</th><th>Objetivo</th><th></th>
           </tr></thead>
           <tbody id="crmBody"></tbody>
         </table>
       </div>
       <div class="px-5 sm:px-7 py-4 text-xs text-mist flex justify-between border-t border-white/5">
         <span id="crmCount">—</span>
-        <span>Datos protegidos · Propiedad exclusiva del desarrollador</span>
+        <span>Datos protegidos · Solo para el equipo de Sea Houz</span>
       </div>
     </div>
 
     <footer class="pt-10 flex flex-col sm:flex-row gap-3 justify-between text-xs text-mist">
-      <span>Sea Houz · Plataforma Direct-to-Owner · Prototipo con datos de demostración</span>
-      <span>Tus clientes son tuyos. Siempre.</span>
+      <span>Sea Houz · Panel de registros · Prototipo con datos de demostración</span>
+      <span>Sea Houz · KM 38, Rosarito</span>
     </footer>
   </section>
 </main>
@@ -993,10 +1001,11 @@ function submitLead() {
   // push into owner CRM, "real time"
   const lead = {
     name, phone, email, origin: guessOrigin(phone), type: joinA(state.answers.type), amenity: joinA(state.answers.amenity),
-    goal: joinA(state.answers.goal), budget: state.budget || 675000, score: 96, status: 'hot', code, fresh: true
+    home: document.getElementById('fHome').value, goal: joinA(state.answers.goal), budget: state.budget || 675000, score: 96, status: 'hot', code, fresh: true
   };
   leads.unshift(lead);
   liveBump = (liveBump || 0) + 1;
+  if (lead.home === 'none') noBump++; else { ownBump++; if (lead.home === 'Vi Tower') viBump++; else taoBump++; }
   state.answers.amenity.forEach(bumpAmenity);
   renderCRM(); updateKpisLive();
   showToast(L(`New lead: ${name} · ${lead.type}`, `Nuevo lead: ${name} · ${tr(lead.type)}`));
@@ -1047,7 +1056,7 @@ function copyCode() {
 function resetQuiz() {
   state.answers = { type: [], amenity: [], goal: [] }; state.budget = null;
   document.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
-  document.getElementById('leadForm').reset();
+  document.getElementById('leadForm').reset(); fCountry.value = 'MX';
   document.querySelectorAll('.field').forEach(f => f.classList.remove('invalid'));
   showStep(1, true);
 }
@@ -1079,16 +1088,16 @@ const TREND_MX = [12, 14, 13, 18, 21, 19, 24, 27, 26, 31, 33, 38];
 const weekLabels = () => Array.from({ length: 12 }, (_, i) => L('Wk ', 'Sem ') + (i + 1));
 
 let leads = [
-  { name: 'Michael Harrington', origin: 'La Jolla, CA', phone: '(858) 555-0193', email: 'm.harrington@outlook.com', type: 'Houz D · Vi Tower', amenity: 'Ocean-view balcony', goal: 'Full-time retirement', budget: 775000, score: 97, status: 'hot', code: 'SHZ-MH7Q-K2PX' },
-  { name: 'Jennifer & Tom Walsh', origin: 'Newport Beach, CA', phone: '(949) 555-0117', email: 'jwalsh.home@gmail.com', type: 'Houz E · TAO Tower', amenity: 'Spa bathroom, dual shower', goal: 'Weekend getaway', budget: 775000, score: 94, status: 'hot', code: 'SHZ-JW4D-9RTA' },
-  { name: 'David Kessler', origin: 'Scottsdale, AZ', phone: '(480) 555-0166', email: 'dkessler@kesslercap.com', type: 'Houz F · TAO Tower', amenity: 'Ocean-view balcony', goal: 'Airbnb investment', budget: 745000, score: 91, status: 'hot', code: 'SHZ-DK8M-3WEN' },
-  { name: 'Sarah Lindqvist', origin: 'Carlsbad, CA', phone: '(760) 555-0128', email: 'sarah.lindqvist@icloud.com', type: 'Houz C · Vi Tower', amenity: 'Spa bathroom, dual shower', goal: 'Full-time retirement', budget: 675000, score: 88, status: 'warm', code: 'SHZ-SL2B-H7KC' },
-  { name: 'Robert "Bob" Delgado', origin: 'Chula Vista, CA', phone: '(619) 555-0174', email: 'bdelgado.re@yahoo.com', type: 'Houz D · Vi Tower', amenity: 'Private jacuzzi', goal: 'Airbnb investment', budget: 775000, score: 86, status: 'hot', code: 'SHZ-RD5N-QX4M' },
-  { name: 'Karen Mitchell', origin: 'Irvine, CA', phone: '(714) 555-0102', email: 'karen.mitchell@me.com', type: 'Houz E · TAO Tower', amenity: '24/7 gated security', goal: 'Full-time retirement', budget: 775000, score: 83, status: 'warm', code: 'SHZ-KM9F-2LPV' },
-  { name: 'Brandon Ortiz', origin: 'Santa Monica, CA', phone: '(310) 555-0189', email: 'brandon@ortizventures.co', type: 'Houz C · Vi Tower', amenity: 'Ocean-view balcony', goal: 'Airbnb investment', budget: 540000, score: 79, status: 'warm', code: 'SHZ-BO3T-7GYH' },
-  { name: 'Linda & Greg Thompson', origin: 'Escondido, CA', phone: '(760) 555-0145', email: 'thompsonsretire@gmail.com', type: 'Houz F · TAO Tower', amenity: 'Ocean-view balcony', goal: 'Full-time retirement', budget: 595000, score: 77, status: 'new', code: 'SHZ-LT6R-W8EQ' },
-  { name: 'Ashley Nguyen', origin: 'Huntington Beach, CA', phone: '(714) 555-0137', email: 'ashley.nguyen@proton.me', type: 'Houz C · Vi Tower', amenity: 'Spa bathroom, dual shower', goal: 'Weekend getaway', budget: 675000, score: 74, status: 'new', code: 'SHZ-AN2K-5ZMD' },
-  { name: 'Steven Park', origin: 'Las Vegas, NV', phone: '(702) 555-0151', email: 'spark.invest@gmail.com', type: 'Houz F · TAO Tower', amenity: 'Private jacuzzi', goal: 'Airbnb investment', budget: 595000, score: 71, status: 'new', code: 'SHZ-SP8J-4CRT' }
+  { name: 'Michael Harrington', home: 'none', origin: 'La Jolla, CA', phone: '(858) 555-0193', email: 'm.harrington@outlook.com', type: 'Houz D · Vi Tower', amenity: 'Ocean-view balcony', goal: 'Full-time retirement', budget: 775000, score: 97, status: 'hot', code: 'SHZ-MH7Q-K2PX' },
+  { name: 'Jennifer & Tom Walsh', home: 'Vi Tower', origin: 'Newport Beach, CA', phone: '(949) 555-0117', email: 'jwalsh.home@gmail.com', type: 'Houz E · TAO Tower', amenity: 'Spa bathroom, dual shower', goal: 'Weekend getaway', budget: 775000, score: 94, status: 'hot', code: 'SHZ-JW4D-9RTA' },
+  { name: 'David Kessler', home: 'none', origin: 'Scottsdale, AZ', phone: '(480) 555-0166', email: 'dkessler@kesslercap.com', type: 'Houz F · TAO Tower', amenity: 'Ocean-view balcony', goal: 'Airbnb investment', budget: 745000, score: 91, status: 'hot', code: 'SHZ-DK8M-3WEN' },
+  { name: 'Sarah Lindqvist', home: 'TAO Tower', origin: 'Carlsbad, CA', phone: '(760) 555-0128', email: 'sarah.lindqvist@icloud.com', type: 'Houz C · Vi Tower', amenity: 'Spa bathroom, dual shower', goal: 'Full-time retirement', budget: 675000, score: 88, status: 'warm', code: 'SHZ-SL2B-H7KC' },
+  { name: 'Robert "Bob" Delgado', home: 'Vi Tower', origin: 'Chula Vista, CA', phone: '(619) 555-0174', email: 'bdelgado.re@yahoo.com', type: 'Houz D · Vi Tower', amenity: 'Private jacuzzi', goal: 'Airbnb investment', budget: 775000, score: 86, status: 'hot', code: 'SHZ-RD5N-QX4M' },
+  { name: 'Karen Mitchell', home: 'none', origin: 'Irvine, CA', phone: '(714) 555-0102', email: 'karen.mitchell@me.com', type: 'Houz E · TAO Tower', amenity: '24/7 gated security', goal: 'Full-time retirement', budget: 775000, score: 83, status: 'warm', code: 'SHZ-KM9F-2LPV' },
+  { name: 'Brandon Ortiz', home: 'none', origin: 'Santa Monica, CA', phone: '(310) 555-0189', email: 'brandon@ortizventures.co', type: 'Houz C · Vi Tower', amenity: 'Ocean-view balcony', goal: 'Airbnb investment', budget: 540000, score: 79, status: 'warm', code: 'SHZ-BO3T-7GYH' },
+  { name: 'Linda & Greg Thompson', home: 'TAO Tower', origin: 'Escondido, CA', phone: '(760) 555-0145', email: 'thompsonsretire@gmail.com', type: 'Houz F · TAO Tower', amenity: 'Ocean-view balcony', goal: 'Full-time retirement', budget: 595000, score: 77, status: 'new', code: 'SHZ-LT6R-W8EQ' },
+  { name: 'Ashley Nguyen', home: 'none', origin: 'Huntington Beach, CA', phone: '(714) 555-0137', email: 'ashley.nguyen@proton.me', type: 'Houz C · Vi Tower', amenity: 'Spa bathroom, dual shower', goal: 'Weekend getaway', budget: 675000, score: 74, status: 'new', code: 'SHZ-AN2K-5ZMD' },
+  { name: 'Steven Park', home: 'none', origin: 'Las Vegas, NV', phone: '(702) 555-0151', email: 'spark.invest@gmail.com', type: 'Houz F · TAO Tower', amenity: 'Private jacuzzi', goal: 'Airbnb investment', budget: 595000, score: 71, status: 'new', code: 'SHZ-SP8J-4CRT' }
 ];
 
 function bumpAmenity(src) {
@@ -1117,17 +1126,24 @@ function countUp(el, to, dur = 1400, fmt = n => n.toLocaleString('en-US')) {
   requestAnimationFrame(tick);
 }
 
-function updateKpisLive() {
-  countUp(document.getElementById('kpiLeads'), 1284 + liveBump, 800);
-  countUp(document.getElementById('kpiReady'), 47 + liveBump, 800);
+let ownBump = 0, noBump = 0, viBump = 0, taoBump = 0;
+function setKpis(f = 1, dur = 1400) {
+  const R = x => Math.round(x * f);
+  const vi = R(78) + viBump, tao = R(59) + taoBump, own = vi + tao, no = R(1147) + noBump;
+  countUp(document.getElementById('kpiLeads'), own + no, dur);
+  countUp(document.getElementById('kpiOwn'), own, dur);
+  countUp(document.getElementById('kpiNoOwn'), no, dur);
+  document.getElementById('kpiVi').textContent = vi; document.getElementById('kpiTao').textContent = tao;
+  document.getElementById('barVi').style.width = (vi / own * 57 + 0) + '%'; document.getElementById('barTao').style.width = (tao / own * 43) + '%';
+  document.getElementById('barNo').style.width = Math.round(no / (own + no) * 100) + '%';
 }
+function updateKpisLive() { setKpis(1, 800); }
 
 let animateRows = false;
 function loadOwner() {
   // reset everything so the dashboard "loads" fresh on every visit
-  ['kpiLeads', 'kpiBudget', 'kpiReady'].forEach(id => { const e = document.getElementById(id); e._cu = (e._cu || 0) + 1; e.textContent = '0'; });
+  ['kpiLeads', 'kpiOwn', 'kpiNoOwn'].forEach(id => { const e = document.getElementById(id); e._cu = (e._cu || 0) + 1; e.textContent = '0'; });
   document.querySelectorAll('[data-range]').forEach(x => x.classList.toggle('active', x.dataset.range === '30'));
-  document.getElementById('kpiPipeline').textContent = '$34.9M';
   document.querySelectorAll('#crmFilters .filter-chip').forEach(x => x.classList.toggle('active', x.dataset.f === 'all'));
   crmFilter = 'all';
   Object.keys(charts).forEach(k => { charts[k].destroy(); delete charts[k]; });
@@ -1138,9 +1154,7 @@ function loadOwner() {
   } else {
     buildCharts();
   }
-  countUp(document.getElementById('kpiLeads'), 1284 + liveBump);
-  countUp(document.getElementById('kpiBudget'), 742);
-  countUp(document.getElementById('kpiReady'), 47 + liveBump);
+  setKpis(1);
   animateRows = true; renderCRM(); setTimeout(() => animateRows = false, 1800);
   renderLegend();
   insightIdx = 0; typeInsight(INS[LANG][0]);
@@ -1209,7 +1223,6 @@ function buildCharts() {
     options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1800 }, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } } }
   });
   charts.s1 = spark('spark1', [20, 24, 23, 29, 31, 30, 36, 41, 39, 46, 52, 58], '#c9a45c');
-  charts.s2 = spark('spark2', [690, 702, 698, 711, 705, 719, 726, 722, 731, 738, 735, 742], C.spark);
 }
 
 function renderLegend() {
@@ -1222,11 +1235,14 @@ function renderLegend() {
 
 const avatarColors = ['linear-gradient(135deg,#e6cf98,#a87b3f)', 'linear-gradient(135deg,#a5c8fb,#3b5b9a)', 'linear-gradient(135deg,#f5d0c5,#c07a5f)', 'linear-gradient(135deg,#c7f0d8,#4c9a74)'];
 let crmFilter = 'all';
+const waDigits = p => { const d = String(p).replace(/\D/g, ''); return String(p).trim().startsWith('+') ? d : '1' + d; };
 const called = new Set();
 
 function renderCRM() {
-  const rows = leads.filter(l => crmFilter === 'all' ? true : crmFilter === 'hot' ? l.status === 'hot' : (l.type.includes(crmFilter) || l.goal === crmFilter));
-  const statusLabel = { hot: L('🔥 Hot', '🔥 Caliente'), warm: L('Warm', 'Tibio'), new: L('New', 'Nuevo') };
+  const chipTxt = { all: L('All', 'Todos'), own: L('With condo', 'Con condominio'), none: L('No condo', 'Sin condominio'), 'Vi Tower': L('Vi Tower', 'Torre Vi'), 'TAO Tower': L('TAO Tower', 'Torre TAO') };
+  document.querySelectorAll('#crmFilters .filter-chip').forEach(c => c.textContent = chipTxt[c.dataset.f]);
+  const rows = leads.filter(l => crmFilter === 'all' ? true : crmFilter === 'own' ? l.home !== 'none' : crmFilter === 'none' ? l.home === 'none' : l.home === crmFilter);
+  const homeTxt = l => l.home === 'none' ? `<span class="text-mist">${L('No condo yet', 'Sin condominio')}</span>` : `<span class="font-medium text-gold2">${l.home === 'Vi Tower' ? L('Vi Tower', 'Torre Vi') : L('TAO Tower', 'Torre TAO')}</span>`;
   document.getElementById('crmBody').innerHTML = rows.map((l, i) => {
     const initials = l.name.replace(/["“”]/g, '').split(/\s+/).filter(w => /^[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(w) && w !== '&').map(w => w[0]).slice(0, 2).join('').toUpperCase();
     const isCalled = called.has(l.code);
@@ -1236,28 +1252,17 @@ function renderCRM() {
         <div><div class="font-medium text-[#f4f1ea] flex items-center gap-2">${esc(l.name)}${l.fresh ? '<span class="text-[.6rem] tracking-[.14em] uppercase bg-[#c9a45c] text-[#0b0d12] rounded px-1.5 py-0.5">' + L('New', 'Nuevo') + '</span>' : ''}</div>
         <div class="text-xs text-mist">${esc(l.email)}</div></div></div></td>
       <td class="text-[#c9ced8]">${esc(l.origin)}</td>
+      <td>${homeTxt(l)}</td>
       <td class="text-[#f4f1ea]">${esc(tr(l.type))}</td>
       <td class="text-[#c9ced8]">${esc(tr(l.amenity))}</td>
       <td class="text-[#c9ced8]">${esc(tr(l.goal))}</td>
-      <td class="font-medium gold-text">${fmtUSD(l.budget)}</td>
-      <td><div class="flex items-center gap-2"><div class="score"><span style="width:${l.score}%"></span></div><span class="text-xs text-[#d7dbe3]">${l.score}</span></div></td>
-      <td><span class="status ${l.status}">${statusLabel[l.status]}</span></td>
-      <td class="font-mono text-xs text-gold2">${esc(l.code)}</td>
-      <td class="text-right"><button class="call-btn ${isCalled ? 'done' : ''}" data-code="${esc(l.code)}" data-name="${esc(l.name)}" data-phone="${esc(l.phone)}">
-        ${isCalled ? L('✓ Booked', '✓ Agendada') : '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1z"/></svg>' + L('Call', 'Llamar')}
-      </button></td>
+      <td class="text-right"><a class="call-btn" target="_blank" rel="noopener" href="https://wa.me/${waDigits(l.phone)}"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.600 15.100L2 22l5-1.300A10 10 0 1012 2zm5.200 13.900c-.2.600-1.300 1.200-1.800 1.200-.5.100-1 .2-3.300-.7-2.800-1.100-4.500-4-4.700-4.200-.1-.2-1.100-1.500-1.100-2.800s.7-2 1-2.300c.2-.3.500-.3.700-.3h.5c.2 0 .4 0 .6.500l.8 2c.1.200.1.300 0 .500l-.3.400-.4.400c-.1.100-.3.300-.1.600.2.300.8 1.300 1.700 2.100 1.100 1 2.100 1.300 2.400 1.400.3.100.5.100.6-.1l.9-1.100c.2-.3.400-.2.600-.1l1.900.9c.3.100.5.200.5.300.1.200.1.800-.1 1.300z"/></svg> WhatsApp</a></td>
     </tr>`;
   }).join('');
   leads.forEach(l => l.fresh = false);
-  document.getElementById('crmCount').textContent = L(`Showing ${rows.length} of ${leads.length} leads · ${leads.filter(l => l.status === 'hot').length} hot`, `Mostrando ${rows.length} de ${leads.length} leads · ${leads.filter(l => l.status === 'hot').length} calientes`);
+  document.getElementById('crmCount').textContent = L(`Showing ${rows.length} of ${leads.length} registered · ${leads.filter(l => l.home !== 'none').length} with a condo`, `Mostrando ${rows.length} de ${leads.length} registrados · ${leads.filter(l => l.home !== 'none').length} con condominio`);
 }
 
-document.getElementById('crmBody').addEventListener('click', e => {
-  const b = e.target.closest('.call-btn'); if (!b || called.has(b.dataset.code)) return;
-  called.add(b.dataset.code);
-  showToast(L(`Direct call booked with ${b.dataset.name} · ${b.dataset.phone}`, `Llamada directa agendada con ${b.dataset.name} · ${b.dataset.phone}`));
-  renderCRM();
-});
 document.getElementById('crmFilters').addEventListener('click', e => {
   const b = e.target.closest('.filter-chip'); if (!b) return;
   document.querySelectorAll('#crmFilters .filter-chip').forEach(x => x.classList.toggle('active', x === b));
@@ -1266,9 +1271,7 @@ document.getElementById('crmFilters').addEventListener('click', e => {
 document.querySelectorAll('[data-range]').forEach(b => b.addEventListener('click', () => {
   document.querySelectorAll('[data-range]').forEach(x => x.classList.toggle('active', x === b));
   const f = { 7: .28, 30: 1, 90: 2.7 }[b.dataset.range];
-  countUp(document.getElementById('kpiLeads'), Math.round(1284 * f) + liveBump, 900);
-  countUp(document.getElementById('kpiReady'), Math.round(47 * f) + liveBump, 900);
-  document.getElementById('kpiPipeline').textContent = '$' + (34.9 * f).toFixed(1) + 'M';
+  setKpis(f, 900);
   if (charts.trend) {
     charts.trend.data.datasets.forEach(ds => ds.data = ds.data.map(v => Math.max(4, Math.round(v * (0.85 + Math.random() * 0.3)))));
     charts.trend.update();
@@ -1307,12 +1310,12 @@ function typeInsight(html) {
 function regenInsight() { insightIdx = (insightIdx + 1) % INS[LANG].length; typeInsight(INS[LANG][insightIdx]); }
 
 function exportCSV() {
-  const head = L(['Name', 'Origin', 'Phone', 'Email', 'Interest', 'Amenity', 'Goal', 'Budget USD', 'Score', 'Status', 'ID'], ['Nombre', 'Origen', 'Telefono', 'Email', 'Interes', 'Amenidad', 'Objetivo', 'Presupuesto USD', 'Score', 'Estado', 'Codigo VIP']);
-  const rows = leads.map(l => [l.name, l.origin, l.phone, l.email, tr(l.type), tr(l.amenity), tr(l.goal), l.budget, l.score, l.status, l.code]);
+  const head = L(['Name', 'Origin', 'Phone', 'Email', 'Condo', 'Interest', 'Amenity', 'Goal'], ['Nombre', 'Origen', 'Telefono', 'Email', 'Condominio', 'Interes', 'Amenidad', 'Objetivo']);
+  const rows = leads.map(l => [l.name, l.origin, l.phone, l.email, l.home === 'none' ? L('None', 'Sin condominio') : l.home, tr(l.type), tr(l.amenity), tr(l.goal)]);
   const csv = [head, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
-  a.download = 'sea-houz-leads-vip.csv'; a.click();
+  a.download = 'sea-houz-registrados.csv'; a.click();
   showToast(L('CSV exported · ', 'CSV exportado · ') + leads.length + ' leads');
 }
 
@@ -1683,9 +1686,12 @@ document.getElementById('invChart').addEventListener('click', e => {
 const PAIRS = [
   ['The Buyer ·', 'El Comprador ·'], ['The Owner ·', 'El Propietario ·'],
   ['Smart Offer', 'Oferta Inteligente'], ['Smart Offer ·', 'Oferta Inteligente ·'], ['Dashboard', 'Panel'],
-  ['Direct-to-Developer', 'Directo con el Desarrollador'], ['Direct Developer Access', 'Acceso Directo al Desarrollador'],
+  ['Direct-to-Developer', 'Directo con el Desarrollador'], ['Oceanfront Residences', 'Residencias frente al mar'],
+  ['With condo', 'Con condominio'], ['No condo yet', 'Sin condominio'], ['Total registered', 'Total registrados'], ['Registry', 'Registro'], ['Condo', 'Condominio'],
+  ['Registered who do not own a home with us yet', 'Registrados que aún no tienen casa con nosotros'], ['Data protected · Sea Houz team only', 'Datos protegidos · Solo para el equipo de Sea Houz'],
+  ["I don't own a Sea Houz condo yet", 'Aún no tengo condominio en Sea Houz'], ['I own a condo in Vi Tower', 'Ya tengo condominio en la Torre Vi'], ['I own a condo in TAO Tower', 'Ya tengo condominio en la Torre TAO'],
   ['Residences', 'Residencias'],
-  ["Oceanfront living at KM 38, Rosarito, on Baja's Pacific coast. Deal directly with the developer. No brokers, no middlemen, no inflated fees.", 'Vida frente al mar en el KM 38 de Rosarito, sobre la costa del Pacífico de Baja. Trata directo con el desarrollador. Sin corredores, sin intermediarios, sin comisiones infladas.'],
+  ["Oceanfront living at KM 38, Rosarito, on Baja's Pacific coast.", 'Vida frente al mar en el KM 38 de Rosarito, sobre la costa del Pacífico de Baja.'],
   ['Residence', 'Residencia'],
   ['Which residence fits your next chapter?', '¿Qué residencia encaja con tu próximo capítulo?'],
   ['Choose one. Pricing below reflects current developer-direct availability.', 'Elige una. Los precios reflejan la disponibilidad actual directo del desarrollador.'],
@@ -1710,7 +1716,7 @@ const PAIRS = [
   ['Drive down Friday, ocean breakfast Saturday, SENTRI lane home Sunday', 'Llegas el viernes, desayunas frente al mar el sábado y regresas el domingo por el carril SENTRI'],
   ['Vacation-rental ready, with optional on-site management', 'Lista para renta vacacional, con administración opcional en sitio'],
   ['Unlock your Owner Direct Access.', 'Desbloquea tu Acceso Directo al Dueño.'],
-  ['Your information is never sold or shared with agencies.', 'Tu información nunca se vende ni se comparte con agencias.'],
+  ['Your information is kept private.', 'Tu información se mantiene privada.'],
   ['Full name', 'Nombre completo'], ['Please enter your full name.', 'Escribe tu nombre completo.'],
   ['Phone', 'Teléfono'], ['Enter a valid phone number.', 'Ingresa un número de teléfono válido.'],
   ['Email', 'Correo electrónico'], ['Enter a valid email address.', 'Ingresa un correo válido.'],
@@ -1732,7 +1738,7 @@ const PAIRS = [
   ['Tijuana – Rosarito Corridor · Baja California, México', 'Corredor Tijuana – Rosarito · Baja California, México'],
   ['Live ·', 'En vivo ·'], ['· Tijuana–Rosarito Corridor', '· Corredor Tijuana–Rosarito'],
   ['Intelligence', 'Centro de'], ['Center', 'Inteligencia'],
-  ['Your buyers, your data, your control. Zero brokers in between: every prospect comes straight to you.', 'Tus compradores, tus datos, tu control. Cero inmobiliarias en medio: cada prospecto llega directo a ti.'],
+  ['Everyone registered on the page, and what they are looking for.', 'Todas las personas registradas en la página y lo que buscan.'],
   ['7 days', '7 días'], ['30 days', '30 días'], ['90 days', '90 días'], ['Export CSV', 'Exportar CSV'],
   ['Total leads captured', 'Total leads capturados'], ['vs. 1,084 the previous period', 'vs. 1,084 el periodo anterior'],
   ['Top origin', 'Origen principal'], ['CA, USA', 'CA, EE. UU.'],
@@ -1749,8 +1755,8 @@ const PAIRS = [
   ['All', 'Todos'], ['🔥 Hot', '🔥 Calientes'],
   ['Lead', 'Prospecto'], ['Origin', 'Origen'], ['Budget', 'Presupuesto'], ['Status', 'Estado'], ['ID', 'ID'],
   ['Protected data · Exclusive property of the developer', 'Datos protegidos · Propiedad exclusiva del desarrollador'],
-  ['Sea Houz · Direct-to-Owner platform · Demo data prototype', 'Sea Houz · Plataforma Direct-to-Owner · Prototipo con datos de demostración'],
-  ['Your clients are yours. Always.', 'Tus clientes son tuyos. Siempre.'], ['New lead', 'Nuevo lead']
+  ['Sea Houz · Registry panel · Demo data prototype', 'Sea Houz · Panel de registros · Prototipo con datos de demostración'],
+  ['New lead', 'Nuevo lead']
 ].concat(Object.entries(ES));
 const nrm = x => x.replace(/\s+/g, ' ').trim();
 const EN2ES = new Map(), ES2EN = new Map();
