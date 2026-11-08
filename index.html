@@ -621,8 +621,8 @@
   <!-- Inventory & availability -->
   <section id="inventory" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 scroll-mt-24">
     <div id="invHead"></div>
-    <div id="invStats"></div>
     <div id="invChart"></div>
+    <div id="invStats"></div>
     <div id="invModels"></div>
     <div id="invDetail" class="hidden"></div>
   </section>
@@ -1460,12 +1460,12 @@ function renderInventory() {
       <div>
         <div class="tag text-gold2">Sea Houz · Vi Tower &amp; TAO Tower</div>
         <h2 class="font-serif text-4xl sm:text-5xl mt-3 text-[#f4f1ea]">${L('Inventory &amp; <span class="italic gold-text">Availability</span>', 'Inventario y <span class="italic gold-text">Disponibilidad</span>')}</h2>
-        <p class="text-sm text-mist mt-3 max-w-2xl">${L(`Every one of the ${total} residences, floor by floor. Prices shown are with luxury finishes; gray shell versions start at ${money(minGray)}.`, `Las ${total} residencias, piso por piso. Los precios mostrados son con acabados de lujo; la versión en obra gris inicia en ${money(minGray)}.`)}</p>
+        <p class="text-sm text-mist mt-3 max-w-2xl">${L(`Every one of the ${total} residences, floor by floor. Prices on the chart are with luxury finishes.`, `Las ${total} residencias, piso por piso. Los precios de la tabla son con acabados de lujo.`)}</p>
       </div>
       <div class="glass-gold rounded-2xl px-5 py-4 shrink-0">
         <div class="tag text-gold2">${L('Available from', 'Disponible desde')}</div>
-        <div class="font-serif text-4xl gold-text mt-1">${money(minLux)}</div>
-        <div class="text-xs text-mist mt-1">${L('luxury finishes · USD', 'acabados de lujo · USD')}</div>
+        <div class="font-serif text-4xl gold-text mt-1">${money(minGray)}</div>
+        <div class="text-xs text-mist mt-1">${L(`gray shell · luxury finishes from ${money(minLux)}`, `obra gris · acabados de lujo desde ${money(minLux)}`)}</div>
       </div>
     </div>`;
 
