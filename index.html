@@ -131,6 +131,11 @@
   html[data-theme="light"] .hero-bg .ov { background: linear-gradient(180deg, rgba(250,247,240,.80), rgba(250,247,240,.88) 60%, rgba(250,247,240,.98)); }
   .tour-btn { width: 40px; height: 40px; border-radius: 999px; background: rgba(7,9,15,.7); color: #f4f1ea; border: 1px solid rgba(255,255,255,.25); backdrop-filter: blur(6px); font-size: .8rem; cursor: pointer; }
   .tour-btn:hover { background: rgba(201,164,92,.85); color: #0b0d12; }
+  .adm-grid { display: grid; grid-template-columns: 34px repeat(2, 1fr) 10px repeat(2, 1fr); gap: 4px; align-items: center; }
+  .adm-cell { height: 36px; border-radius: 6px; font-size: .62rem; letter-spacing: .04em; font-weight: 600; display: grid; place-items: center; line-height: 1.1; appearance: none; border: 0; font-family: inherit; cursor: pointer; transition: transform .15s, filter .15s; }
+  .adm-cell:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .adm-cell small { display: block; font-size: .5rem; opacity: .8; font-weight: 500; }
+  .adm-scroll { max-height: 440px; overflow-y: auto; padding-right: 4px; scrollbar-width: thin; }
   .cd { display: none; }
   .inv-tabs { display: none; }
   @keyframes slideInR { from { opacity: 0; transform: translateX(48px); } to { opacity: 1; transform: none; } }
@@ -760,6 +765,9 @@
 
     </div>
 
+    <!-- Inventory admin -->
+    <div id="adminInv" class="mt-4"></div>
+
     <!-- CRM -->
     <div class="glass rounded-[22px] mt-4 overflow-hidden">
       <div class="p-5 sm:p-7 flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -797,6 +805,9 @@
 </main>
 
 <!-- Lightbox -->
+<div id="unitEdit" class="hidden fixed inset-0 z-[90] grid place-items-center p-4" style="background:rgba(4,6,10,.62)" onclick="if(event.target===this)closeUnitEdit()">
+  <div class="glass rounded-2xl p-5 w-full max-w-sm keep-dark" style="background:#0f1524;border:1px solid rgba(201,164,92,.35);color:#e8e6e1" id="unitEditBox"></div>
+</div>
 <div id="lightbox" class="hidden fixed inset-0 z-[90] items-center justify-center keep-dark" style="background:rgba(4,6,10,.95)" onclick="if(event.target===this)closeLightbox()">
   <button class="lb-btn" style="top:18px;right:18px" onclick="closeLightbox()" aria-label="Close">✕</button>
   <button class="lb-btn" style="left:14px;top:50%;margin-top:-23px" onclick="lbStep(-1)" aria-label="Previous">‹</button>
@@ -1147,6 +1158,7 @@ function loadOwner() {
     buildCharts();
   }
   setKpis(1);
+  renderAdmin();
   animateRows = true; renderCRM(); setTimeout(() => animateRows = false, 1800);
   renderLegend();
 }
@@ -1397,6 +1409,19 @@ const FLOORS = [ // [floor, delivery month, status of C D E F]
 let invFilter = new Set(), invView = null, invLastY = 0;
 const PARKING = [['Lobby', '2025-03'], ['LL', '2025-11']];
 const UNITS = FLOORS.flatMap(([f, d, st]) => 'CDEF'.split('').map((m, i) => ({ id: f + m, floor: f, date: d, model: m, status: st[i] })));
+/* Admin-adjustable unit statuses (saved in this browser only) */
+const BASE_STATUS = Object.fromEntries(UNITS.map(u => [u.id, u.status]));
+const STATUS_KEY = 'shz-unit-status';
+(function () {
+  try {
+    const o = JSON.parse(localStorage.getItem(STATUS_KEY) || '{}');
+    UNITS.forEach(u => { if (o[u.id] && 'SRAX'.includes(o[u.id])) u.status = o[u.id]; });
+  } catch (e) {}
+})();
+function saveStatuses() {
+  const o = {}; UNITS.forEach(u => { if (u.status !== BASE_STATUS[u.id]) o[u.id] = u.status; });
+  try { localStorage.setItem(STATUS_KEY, JSON.stringify(o)); } catch (e) {}
+}
 const towerName = m => MODELS[m].tower === 'Vi' ? 'Vi Tower' : 'TAO Tower';
 const money = n => '$' + n.toLocaleString('en-US');
 const fmtMonth = ym => {
@@ -1556,6 +1581,64 @@ function renderInventory() {
   if (inDetail) dEl.innerHTML = detailHTML();
   applyInvFilter();
 }
+
+const ST_INFO = () => ({
+  A: [L('Available', 'Disponible'), 'inv-avail', L('AVAIL', 'DISP')],
+  R: [L('Reserved', 'Reservado'), 'inv-reserved', L('RSVD', 'RES')],
+  S: [L('Sold', 'Vendido'), 'inv-sold', L('SOLD', 'VEND')],
+  X: [L("Developer's reserve", 'Reserva del desarrollador'), 'inv-reserve', L('DEV', 'DEV')]
+});
+function renderAdmin() {
+  const host = document.getElementById('adminInv'); if (!host) return;
+  const info = ST_INFO();
+  const cnt = { S: 0, R: 0, A: 0, X: 0 }; UNITS.forEach(u => cnt[u.status]++);
+  const edited = UNITS.filter(u => u.status !== BASE_STATUS[u.id]).length;
+  const editable = UNITS.filter(u => u.floor <= 21);
+  let g = `<div></div><div class="inv-h" style="grid-column:2/4;padding:0 0 .3rem">Vi TOWER</div><div></div><div class="inv-h" style="grid-column:5/7;padding:0 0 .3rem">TAO TOWER</div>`;
+  for (let f = 21; f >= 1; f--) {
+    g += `<div class="inv-meta fl" style="font-size:.72rem">${f}</div>` + 'CD'.split('').map(m => cell(f + m)).join('') + '<div></div>' + 'EF'.split('').map(m => cell(f + m)).join('');
+  }
+  function cell(id) { const u = UNITS.find(x => x.id === id), i = info[u.status]; return `<button type="button" class="adm-cell ${i[1]}" data-uid="${id}" title="${L('Floor', 'Piso')} ${u.floor} · Houz ${u.model}">${u.model}<small>${i[2]}</small></button>`; }
+  const chips = ['A', 'R', 'S', 'X'].map(k => `<span class="inline-flex items-center gap-2 text-xs text-[#c9ced8]"><span class="inv-dot ${info[k][1]}"></span>${info[k][0]} <b class="text-[#f4f1ea]">${cnt[k]}</b></span>`).join('');
+  host.innerHTML = `
+    <div class="glass rounded-[22px] p-5 sm:p-7">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <div class="tag text-mist">${L('Inventory', 'Inventario')}</div>
+          <h3 class="font-serif text-2xl mt-1 text-[#f4f1ea]">${L('Update unit status', 'Actualizar estado de condominios')}</h3>
+          <p class="text-xs text-mist mt-2 max-w-xl">${L('Tap a condo to mark it available, reserved, sold or developer reserve. The buyer\'s availability chart updates right away. Floors 22–25 stay as developer reserve.', 'Toca un condominio para marcarlo disponible, reservado, vendido o reserva del desarrollador. La tabla de disponibilidad del comprador se actualiza al instante. Los pisos 22–25 se quedan como reserva del desarrollador.')}</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2">${chips}</div>
+      </div>
+      <div class="adm-scroll mt-5"><div class="adm-grid">${g}</div></div>
+      <div class="flex flex-wrap items-center justify-between gap-3 mt-4 text-xs text-mist">
+        <span>${L('Changes are saved only in this browser for now (no database yet).', 'Por ahora los cambios se guardan solo en este navegador (aún no hay base de datos).')}${edited ? ` · ${edited} ${L('changed', 'modificados')}` : ''}</span>
+        ${edited ? `<button type="button" class="btn-ghost !py-2 !px-4" onclick="resetStatuses()">${L('Restore original', 'Restablecer original')}</button>` : ''}
+      </div>
+    </div>`;
+}
+function openUnitEdit(id) {
+  const u = UNITS.find(x => x.id === id); if (!u) return;
+  const info = ST_INFO();
+  document.getElementById('unitEditBox').innerHTML = `
+    <div class="tag text-gold2">${L('Floor', 'Piso')} ${u.floor} · ${towerName(u.model)}</div>
+    <div class="font-serif text-2xl mt-1">Houz ${u.model}</div>
+    <div class="grid gap-2 mt-4">${['A', 'R', 'S', 'X'].map(k => `<button type="button" class="inv-cell ${info[k][1]} !py-3 !text-[.78rem] ${u.status === k ? 'ring-2 ring-[#c9a45c]' : ''}" data-set="${k}" data-uid="${id}">${info[k][0].toUpperCase()}${u.status === k ? ' ✓' : ''}</button>`).join('')}</div>
+    <button type="button" class="btn-ghost w-full mt-3 !py-2.5" onclick="closeUnitEdit()">${L('Cancel', 'Cancelar')}</button>`;
+  document.getElementById('unitEdit').classList.remove('hidden');
+}
+function closeUnitEdit() { document.getElementById('unitEdit').classList.add('hidden'); }
+function setUnitStatus(id, k) {
+  const u = UNITS.find(x => x.id === id); if (!u) return;
+  u.status = k; saveStatuses(); closeUnitEdit(); renderAdmin(); renderInventory();
+  showToast(L(`Houz ${u.model} · floor ${u.floor}: ${ST_INFO()[k][0]}`, `Houz ${u.model} · piso ${u.floor}: ${ST_INFO()[k][0]}`));
+}
+function resetStatuses() {
+  UNITS.forEach(u => u.status = BASE_STATUS[u.id]); saveStatuses(); renderAdmin(); renderInventory();
+}
+document.getElementById('adminInv').addEventListener('click', e => { const b = e.target.closest('[data-uid]'); if (b) openUnitEdit(b.dataset.uid); });
+document.getElementById('unitEdit').addEventListener('click', e => { const b = e.target.closest('[data-set]'); if (b) setUnitStatus(b.dataset.uid, b.dataset.set); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeUnitEdit(); });
 
 function applyInvFilter() {
   const grid = document.querySelector('#invChart .inv-grid'); if (!grid) return;
@@ -1761,7 +1844,7 @@ function setLang(l) {
   const b = document.getElementById('langBtn'); b.dataset.lang = l; b.setAttribute('aria-checked', l === 'es');
   document.title = L('Sea Houz · Baja Ocean Residences', 'Sea Houz · Residencias Baja Ocean');
   translateDom();
-  updateNav(); renderCRM(); renderLegend(); refreshChartLang(); tickClock(); renderInventory(); renderGalleryAmenities(); if (lbIdx >= 0) showLb();
+  updateNav(); renderCRM(); renderAdmin(); renderLegend(); refreshChartLang(); tickClock(); renderInventory(); renderGalleryAmenities(); if (lbIdx >= 0) showLb();
   if (lastName) updateWA();
   positionPill();
 }
