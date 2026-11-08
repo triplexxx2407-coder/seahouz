@@ -117,6 +117,26 @@
   .inv-chip[aria-pressed="true"] { box-shadow: 0 0 0 2px #c9a45c, 0 8px 22px -8px rgba(201,164,92,.7); }
   .inv-grid.filtering .inv-cell.dim { opacity: .14; filter: grayscale(1); }
   .inv-grid.filtering button.inv-cell.dim:hover { opacity: .45; }
+  .cd { display: none; }
+  .inv-tabs { display: none; }
+  @keyframes slideInR { from { opacity: 0; transform: translateX(48px); } to { opacity: 1; transform: none; } }
+  @keyframes slideInL { from { opacity: 0; transform: translateX(-48px); } to { opacity: 1; transform: none; } }
+  .inv-grid.anim-r { animation: slideInR .45s cubic-bezier(.2,.8,.2,1); }
+  .inv-grid.anim-l { animation: slideInL .45s cubic-bezier(.2,.8,.2,1); }
+  @media (max-width: 767px) {
+    .inv-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid rgba(201,164,92,.25); margin-bottom: 1rem; }
+    .inv-tab { appearance: none; border: 0; font-family: inherit; cursor: pointer; border-radius: 999px; padding: .6rem .5rem; font-size: .7rem; letter-spacing: .14em; font-weight: 600; background: transparent; color: #aab1c0; transition: all .3s; }
+    .inv-tab[aria-pressed="true"] { background: linear-gradient(135deg,#e6c987,#b88a3e); color: #1a1408; }
+    .inv-scroll { overflow: visible; }
+    .inv-grid { min-width: 0; grid-template-columns: 34px 1fr 1fr; gap: 5px; grid-auto-rows: minmax(44px, auto); }
+    .inv-grid[data-tower="vi"] [data-t="tao"], .inv-grid[data-tower="tao"] [data-t="vi"], .inv-date, .inv-calh { display: none !important; }
+    .inv-grid .inv-meta.fl, .inv-grid .inv-h.fl { grid-column: 1 !important; }
+    .inv-grid [data-c="1"] { grid-column: 2 !important; }
+    .inv-grid [data-c="2"] { grid-column: 3 !important; }
+    .inv-grid [data-c="s"] { grid-column: 2 / 4 !important; }
+    .inv-cell { font-size: .7rem; line-height: 1.25; gap: 1px; align-content: center; }
+    .inv-cell .cd { display: block; font-size: .62rem; opacity: .75; letter-spacing: .08em; font-weight: 500; }
+  }
   .inv-dot { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
   @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
   .view.active .rv { animation: rise .8s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 110ms); }
@@ -287,6 +307,8 @@
   html[data-theme="light"] .inv-reserve { background: #dde2ea; color: #667188; }
   html[data-theme="light"] .inv-park { background: #cdd4df; color: #33405a; }
   html[data-theme="light"] .inv-meta { color: #5f6a7e; }
+  html[data-theme="light"] .inv-tab { color: #5f6a7e; }
+  html[data-theme="light"] .inv-tab[aria-pressed="true"] { color: #1a1408; }
   html[data-theme="light"] .inv-meta.fl { color: #1b2640; }
   html[data-theme="light"] .pill-avail { background: rgba(42,167,224,.12); color: #0a6a99; border-color: rgba(42,167,224,.45); }
   html[data-theme="light"] .live-dot { background: #16a06a; }
@@ -1448,6 +1470,15 @@ function siteMap(m) {
   return `<svg viewBox="0 0 156 94" class="w-full max-w-[160px]" aria-hidden="true"><path d="M4 4c6-3 12-3 18 0s12 3 18 0 12-3 18 0 12 3 18 0 12-3 18 0 12 3 18 0 12-3 18 0" fill="none" stroke="${sea}" stroke-width="1.2" opacity=".75"/>${bld}<text x="78" y="90" text-anchor="middle" font-size="5.5" fill="${cap}" letter-spacing=".5">PACIFIC OCEAN · KM 38 ROSARITO</text></svg>`;
 }
 
+let invTower = 'vi';
+const sd = ym => { const m = fmtMonth(ym); return m.slice(0, -4) + m.slice(-2); };
+function setTower(t) {
+  const grid = document.querySelector('#invChart .inv-grid'); if (!grid || t === invTower) return;
+  const dir = t === 'tao' ? 'anim-r' : 'anim-l';
+  invTower = t; grid.dataset.tower = t;
+  document.querySelectorAll('#invChart .inv-tab').forEach(b => b.setAttribute('aria-pressed', b.dataset.tower === t));
+  grid.classList.remove('anim-r', 'anim-l'); void grid.offsetWidth; grid.classList.add(dir);
+}
 function renderInventory() {
   const st = { S: 0, R: 0, A: 0, X: 0 }; UNITS.forEach(u => st[u.status]++);
   const total = UNITS.length;
@@ -1491,24 +1522,24 @@ function renderInventory() {
     const base = `${L('Floor', 'Piso')} ${u.floor} · Houz ${u.model} · ${towerName(u.model)} · ${fmtMonth(u.date)}`;
     return u.status === 'A' ? `${base} · ${money(m.lux)} ${L('luxury finishes', 'acabados de lujo')} / ${money(m.gray)} ${L('gray shell', 'obra gris')}` : base;
   };
-  let g = `<div class="inv-h" style="grid-row:1;grid-column:1">${L('CALENDAR', 'CALENDARIO')}</div><div class="inv-h" style="grid-row:1;grid-column:2">${L('FLOOR', 'PISO')}</div><div class="inv-h" style="grid-row:1;grid-column:3/5">Vi TOWER</div><div class="inv-h" style="grid-row:1;grid-column:6/8">TAO TOWER</div>`;
+  let g = `<div class="inv-h inv-calh" style="grid-row:1;grid-column:1">${L('CALENDAR', 'CALENDARIO')}</div><div class="inv-h fl" style="grid-row:1;grid-column:2">${L('FLOOR', 'PISO')}</div><div class="inv-h" data-t="vi" data-c="s" style="grid-row:1;grid-column:3/5">Vi TOWER</div><div class="inv-h" data-t="tao" data-c="s" style="grid-row:1;grid-column:6/8">TAO TOWER</div>`;
   const byFloor = f => UNITS.filter(u => u.floor === f);
   [...FLOORS].reverse().forEach(([f, d]) => {
     const row = 27 - f;
-    g += `<div class="inv-meta" style="grid-row:${row};grid-column:1">${fmtMonth(d)}</div><div class="inv-meta fl" style="grid-row:${row};grid-column:2">${f}</div>`;
+    g += `<div class="inv-meta inv-date" style="grid-row:${row};grid-column:1">${fmtMonth(d)}</div><div class="inv-meta fl" style="grid-row:${row};grid-column:2">${f}</div>`;
     if (f === 24 || f === 23) return;
     if (f === 22) {
-      g += `<button type="button" class="inv-cell inv-reserve" data-status="X" data-unit="22C" style="grid-row:${row};grid-column:3/5" title="${L('Floor', 'Piso')} 22 · Vi Tower">${label({ status: 'X' })}</button><button type="button" class="inv-cell inv-reserve" data-status="X" data-unit="22E" style="grid-row:${row};grid-column:6/8" title="${L('Floor', 'Piso')} 22 · TAO Tower">${label({ status: 'X' })}</button>`;
+      g += `<button type="button" class="inv-cell inv-reserve" data-status="X" data-unit="22C" data-t="vi" data-c="s" style="grid-row:${row};grid-column:3/5" title="${L('Floor', 'Piso')} 22 · Vi Tower">${label({ status: 'X' })}<span class="cd">${sd(d)}</span></button><button type="button" class="inv-cell inv-reserve" data-status="X" data-unit="22E" data-t="tao" data-c="s" style="grid-row:${row};grid-column:6/8" title="${L('Floor', 'Piso')} 22 · TAO Tower">${label({ status: 'X' })}<span class="cd">${sd(d)}</span></button>`;
       return;
     }
     byFloor(f).forEach(u => {
       const span = f === 25 ? `grid-row:${row}/span 3;` : `grid-row:${row};`;
-      g += `<button type="button" class="inv-cell ${cls[u.status]}" data-status="${u.status}" style="${span}grid-column:${COL[u.model]}" title="${tip(u)}" data-unit="${u.id}">${label(u)}</button>`;
+      g += `<button type="button" class="inv-cell ${cls[u.status]}" data-status="${u.status}" style="${span}grid-column:${COL[u.model]}" title="${tip(u)}" data-unit="${u.id}" data-t="${'CD'.includes(u.model) ? 'vi' : 'tao'}" data-c="${'CE'.includes(u.model) ? 1 : 2}">${label(u)}<span class="cd">${sd(d)}</span></button>`;
     });
   });
   PARKING.forEach(([n, d], i) => {
     const row = 27 + i;
-    g += `<div class="inv-meta" style="grid-row:${row};grid-column:1">${fmtMonth(d)}</div><div class="inv-meta fl" style="grid-row:${row};grid-column:2;font-size:.62rem">${n}</div><div class="inv-cell inv-park" data-status="P" style="grid-row:${row};grid-column:3/5">${L('PARKING', 'ESTACIONAMIENTO')}</div><div class="inv-cell inv-park" data-status="P" style="grid-row:${row};grid-column:6/8">${L('PARKING', 'ESTACIONAMIENTO')}</div>`;
+    g += `<div class="inv-meta inv-date" style="grid-row:${row};grid-column:1">${fmtMonth(d)}</div><div class="inv-meta fl" style="grid-row:${row};grid-column:2;font-size:.62rem">${n}</div><div class="inv-cell inv-park" data-status="P" data-t="vi" data-c="s" style="grid-row:${row};grid-column:3/5">${L('PARKING', 'ESTACIONAMIENTO')}<span class="cd">${sd(d)}</span></div><div class="inv-cell inv-park" data-status="P" data-t="tao" data-c="s" style="grid-row:${row};grid-column:6/8">${L('PARKING', 'ESTACIONAMIENTO')}<span class="cd">${sd(d)}</span></div>`;
   });
   const fKeys = [['S', 'inv-sold', L('SOLD', 'VENDIDO')], ['R', 'inv-reserved', L('RESERVED', 'RESERVADO')], ['A', 'inv-avail', L('AVAILABLE', 'DISPONIBLE')], ['X', 'inv-reserve', L("DEVELOPER'S RESERVE", 'RESERVA DEL DESARROLLADOR')]];
   const legend = fKeys.map(([k, c, t]) => `<button type="button" class="inv-cell inv-chip ${c} !px-4 !py-1.5 !text-[.66rem]" data-filter="${k}" aria-pressed="${invFilter.has(k)}">${t}</button>`).join('')
@@ -1517,8 +1548,9 @@ function renderInventory() {
     <div class="glass rounded-[22px] p-4 sm:p-7 mt-4">
       <div class="flex flex-wrap items-center justify-center gap-2">${legend}</div>
       <p class="text-[.72rem] text-mist text-center mt-3 mb-6">${L('Tap a status to highlight it · tap any residence to see its floor plan and details.', 'Toca un estado para resaltarlo · toca cualquier residencia para ver su plano y detalles.')}</p>
-      <div class="inv-scroll pb-2"><div class="inv-grid">${g}</div></div>
-      <p class="text-[.7rem] text-mist text-center mt-5">${L('Prototype data based on the current seahouz.com inventory chart. Swipe sideways on small screens.', 'Datos del prototipo basados en la tabla de inventario actual de seahouz.com. En pantallas chicas desliza de lado.')}</p>
+      <div class="inv-tabs"><button type="button" class="inv-tab" data-tower="vi" aria-pressed="${invTower === 'vi'}">&#8592; Vi TOWER</button><button type="button" class="inv-tab" data-tower="tao" aria-pressed="${invTower === 'tao'}">TAO TOWER &#8594;</button></div>
+      <div class="inv-scroll pb-2" style="overflow-x:clip"><div class="inv-grid" data-tower="${invTower}">${g}</div></div>
+      <p class="text-[.7rem] text-mist text-center mt-5">${L('Prototype data based on the current seahouz.com inventory chart. Use the tabs to switch towers on your phone.', 'Datos del prototipo basados en la tabla de inventario actual de seahouz.com. En el celular usa los botones para cambiar de torre.')}</p>
     </div>`;
 
   // model cards
@@ -1644,6 +1676,7 @@ function startQuizWith(m) {
   showToast(L(`Houz ${m} selected · continue the quiz`, `Houz ${m} seleccionada · continúa el quiz`));
 }
 document.getElementById('invChart').addEventListener('click', e => {
+  const tb = e.target.closest('[data-tower]'); if (tb && tb.classList.contains('inv-tab')) { setTower(tb.dataset.tower); return; }
   const f = e.target.closest('[data-filter]'); if (f) { toggleInvFilter(f.dataset.filter); return; }
   const c = e.target.closest('[data-unit]'); if (c) openUnit(c.dataset.unit);
 });
