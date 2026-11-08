@@ -1697,6 +1697,9 @@ document.getElementById('invChart').addEventListener('click', e => {
   const ID = 'L25Q0mWi9Tk', f = document.getElementById('heroVid'), box = f.parentElement;
   const fit = () => { const w = box.clientWidth, h = box.clientHeight; f.style.width = Math.max(w, h * 16 / 9) + 'px'; f.style.height = Math.max(h, w * 9 / 16) + 'px'; };
   new ResizeObserver(fit).observe(box); fit();
+  // Inside an embedded viewer (e.g. the artifact preview) YouTube is blocked, so use a photo instead.
+  let framed = false; try { framed = window.top !== window.self; } catch (e) { framed = true; }
+  if (framed) { box.style.background = `#05070c url(${PHOTOS.p3}) center/cover no-repeat`; f.remove(); return; }
   f.addEventListener('load', () => setTimeout(() => f.classList.add('on'), 1500));
   f.src = `https://www.youtube-nocookie.com/embed/${ID}?autoplay=1&mute=1&loop=1&playlist=${ID}&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3`;
 })();
