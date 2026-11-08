@@ -124,6 +124,12 @@
   .wm-a { font-weight: 300; background: linear-gradient(135deg,#f3e2b3,#c9a45c 60%,#a87b3f); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .wm-b { font-weight: 700; color: #f4f1ea; }
   html[data-theme="light"] .wm-b { color: #14213d; }
+  .hero-bg { position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; background: #05070c; }
+  .hero-bg iframe { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); border: 0; pointer-events: none; opacity: 0; transition: opacity 1.2s; }
+  .hero-bg iframe.on { opacity: 1; }
+  .hero-bg .ov { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,9,15,.72), rgba(7,9,15,.82) 60%, rgba(7,9,15,.97)); }
+  html[data-theme="light"] .hero-bg { background: #f4efe6; }
+  html[data-theme="light"] .hero-bg .ov { background: linear-gradient(180deg, rgba(250,247,240,.80), rgba(250,247,240,.88) 60%, rgba(250,247,240,.98)); }
   .tour-btn { width: 40px; height: 40px; border-radius: 999px; background: rgba(7,9,15,.7); color: #f4f1ea; border: 1px solid rgba(255,255,255,.25); backdrop-filter: blur(6px); font-size: .8rem; cursor: pointer; }
   .tour-btn:hover { background: rgba(201,164,92,.85); color: #0b0d12; }
   .cd { display: none; }
@@ -390,7 +396,9 @@
 
 <!-- ================= VIEW 1: BUYER ================= -->
 <main id="view-buyer" class="view active">
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-16 pb-16">
+  <div class="relative">
+  <div class="hero-bg" aria-hidden="true"><iframe id="heroVid" title="" tabindex="-1" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe><div class="ov"></div></div>
+  <section class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-16 pb-16">
     <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
 
       <!-- Hero copy -->
@@ -430,7 +438,7 @@
           <!-- STEP 1 -->
           <div class="step active relative" data-step="1">
             <h2 class="font-serif text-3xl sm:text-4xl mt-8 text-[#f4f1ea]">Which residence fits your next chapter?</h2>
-            <p class="text-sm text-mist mt-2">Choose one. Pricing below reflects current developer-direct availability.</p>
+            <p class="text-sm text-mist mt-2">Pricing below reflects current availability.</p>
             <div class="grid sm:grid-cols-2 gap-3 mt-7" data-group="type">
               <button class="opt" data-value="Houz C · Vi Tower" data-budget="675000">
                 <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="3"><path d="M5 12l5 5 9-11"/></svg></span>
@@ -603,6 +611,8 @@
     </div>
   </section>
 
+  </div>
+
   <!-- Own the sky banner -->
   <section id="skyBanner" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
     <div class="relative overflow-hidden rounded-[28px] border hairline" style="min-height: 360px">
@@ -614,20 +624,6 @@
         <p class="mt-4 text-sm tracking-[.12em] uppercase text-[#c9ced8]">25 floors above the Pacific · KM 38, Rosarito</p>
       </div>
     </div>
-  </section>
-
-  <!-- Video tour -->
-  <section id="tour" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 scroll-mt-24">
-    <div class="tag text-gold2">Video tour</div>
-    <h2 class="font-serif text-4xl sm:text-5xl mt-3 text-[#f4f1ea]">Walk the <span class="italic gold-text">complex</span></h2>
-    <div class="relative mt-8 rounded-[24px] overflow-hidden border hairline keep-dark" style="aspect-ratio:16/9;background:#05070c">
-      <iframe id="tourFrame" class="absolute inset-0 w-full h-full" title="Sea Houz video tour" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" style="border:0"></iframe>
-      <div class="absolute bottom-3 right-3 flex gap-2">
-        <button type="button" id="tourPlay" class="tour-btn" aria-label="Pause video">&#10074;&#10074;</button>
-        <button type="button" id="tourMute" class="tour-btn" aria-label="Unmute video">&#128263;</button>
-      </div>
-    </div>
-    <a class="inline-block text-xs text-mist underline underline-offset-4 mt-3" href="https://www.youtube.com/watch?v=L25Q0mWi9Tk" target="_blank" rel="noopener">Watch on YouTube</a>
   </section>
 
   <!-- Gallery -->
@@ -1696,15 +1692,13 @@ document.getElementById('invChart').addEventListener('click', e => {
   const c = e.target.closest('[data-unit]'); if (c) openUnit(c.dataset.unit);
 });
 
-/* Video tour (YouTube, autoplay muted loop, lazy) */
+/* Hero background video: autoplay, muted, loop, no interaction */
 (() => {
-  const ID = 'L25Q0mWi9Tk', f = document.getElementById('tourFrame');
-  let playing = true, muted = true, loaded = false;
-  const cmd = (fn, args = []) => { try { f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: fn, args }), '*'); } catch (e) {} };
-  const load = () => { if (loaded) return; loaded = true; f.src = `https://www.youtube-nocookie.com/embed/${ID}?autoplay=1&mute=1&loop=1&playlist=${ID}&controls=0&modestbranding=1&rel=0&playsinline=1&enablejsapi=1`; };
-  new IntersectionObserver(es => { if (es[0].isIntersecting) { load(); if (!playing) return; cmd('playVideo'); } else if (loaded) cmd('pauseVideo'); }, { threshold: .35 }).observe(f);
-  document.getElementById('tourPlay').addEventListener('click', e => { playing = !playing; cmd(playing ? 'playVideo' : 'pauseVideo'); e.currentTarget.innerHTML = playing ? '&#10074;&#10074;' : '&#9654;'; });
-  document.getElementById('tourMute').addEventListener('click', e => { muted = !muted; cmd(muted ? 'mute' : 'unMute'); e.currentTarget.innerHTML = muted ? '&#128263;' : '&#128266;'; });
+  const ID = 'L25Q0mWi9Tk', f = document.getElementById('heroVid'), box = f.parentElement;
+  const fit = () => { const w = box.clientWidth, h = box.clientHeight; f.style.width = Math.max(w, h * 16 / 9) + 'px'; f.style.height = Math.max(h, w * 9 / 16) + 'px'; };
+  new ResizeObserver(fit).observe(box); fit();
+  f.addEventListener('load', () => setTimeout(() => f.classList.add('on'), 1500));
+  f.src = `https://www.youtube-nocookie.com/embed/${ID}?autoplay=1&mute=1&loop=1&playlist=${ID}&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3`;
 })();
 
 /* =========================================================
@@ -1714,7 +1708,6 @@ const PAIRS = [
   ['The Buyer ·', 'El Comprador ·'], ['The Owner ·', 'El Propietario ·'],
   ['Smart Offer', 'Oferta Inteligente'], ['Smart Offer ·', 'Oferta Inteligente ·'], ['Dashboard', 'Panel'],
   ['Direct-to-Developer', 'Directo con el Desarrollador'], ['Oceanfront Residences', 'Residencias frente al mar'],
-  ['Video tour', 'Recorrido en video'], ['Watch on YouTube', 'Ver en YouTube'],
   ['With condo', 'Con condominio'], ['No condo yet', 'Sin condominio'], ['Total registered', 'Total registrados'], ['Registry', 'Registro'], ['Condo', 'Condominio'],
   ['Registered who do not own a home with us yet', 'Registrados que aún no tienen casa con nosotros'], ['Data protected · Sea Houz team only', 'Datos protegidos · Solo para el equipo de Sea Houz'],
   ["I don't own a Sea Houz condo yet", 'Aún no tengo condominio en Sea Houz'], ['I own a condo in Vi Tower', 'Ya tengo condominio en la Torre Vi'], ['I own a condo in TAO Tower', 'Ya tengo condominio en la Torre TAO'],
@@ -1722,7 +1715,7 @@ const PAIRS = [
   ["Oceanfront living at KM 38, Rosarito, on Baja's Pacific coast.", 'Vida frente al mar en el KM 38 de Rosarito, sobre la costa del Pacífico de Baja.'],
   ['Residence', 'Residencia'],
   ['Which residence fits your next chapter?', '¿Qué residencia encaja con tu próximo capítulo?'],
-  ['Choose one. Pricing below reflects current developer-direct availability.', 'Elige una. Los precios reflejan la disponibilidad actual directo del desarrollador.'],
+  ['Pricing below reflects current availability.', 'Los precios reflejan la disponibilidad actual.'],
   ['Vi Tower · 2,906 sq ft · 3 bed · 3 bath', 'Vi Tower · 270 m² · 3 rec. · 3 baños'],
   ['Vi Tower · 3,369 sq ft · 3 bed · 3 bath', 'Vi Tower · 313 m² · 3 rec. · 3 baños'],
   ['TAO Tower · 3,369 sq ft · 3 bed · 3 bath', 'TAO Tower · 313 m² · 3 rec. · 3 baños'],
