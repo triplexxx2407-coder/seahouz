@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sea Houz · Baja Ocean Residences</title>
+<meta name="description" content="Sea Houz: Direct Developer Access to luxury oceanfront residences in the Tijuana–Rosarito corridor." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.13/dist/index.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style type="text/tailwindcss">
+  @theme {
+    --color-ink: #07090f;
+    --color-carbon: #0d0f14;
+    --color-navy: #0b1730;
+    --color-navy2: #10203f;
+    --color-gold: #c9a45c;
+    --color-gold2: #e6cf98;
+    --color-bronze: #a87b3f;
+    --color-mist: #9aa3b5;
+    --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+</style>
+
+<style>
+  :root { color-scheme: dark; }
+  html, body { background: #07090f; }
+  body { font-family: "Inter", system-ui, sans-serif; color: #e8e6e1; -webkit-font-smoothing: antialiased; }
+
+  /* Ambient background */
+  .ambient {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(201,164,92,.10), transparent 60%),
+      radial-gradient(900px 700px at -10% 30%, rgba(30,64,140,.28), transparent 60%),
+      radial-gradient(800px 500px at 50% 120%, rgba(16,32,63,.9), transparent 70%),
+      linear-gradient(180deg, #07090f 0%, #0a1222 55%, #07090f 100%);
+  }
+  .grain::after {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .05;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  .gold-text {
+    background: linear-gradient(100deg, #a87b3f 0%, #e6cf98 35%, #c9a45c 55%, #f3e2b3 75%, #a87b3f 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hairline { border-color: rgba(201,164,92,.18); }
+  .glass {
+    background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.015));
+    border: 1px solid rgba(255,255,255,.07);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
+  .glass-gold {
+    background: linear-gradient(180deg, rgba(201,164,92,.08), rgba(201,164,92,.02));
+    border: 1px solid rgba(201,164,92,.25);
+  }
+
+  /* Top toggle */
+  .seg { position: relative; display: inline-flex; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); }
+  .seg button { position: relative; z-index: 1; padding: .55rem 1.1rem; border-radius: 999px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 500; color: #9aa3b5; transition: color .35s; white-space: nowrap; }
+  .seg button.active { color: #0b0d12; }
+  @media (max-width: 640px) { .seg button { padding: .5rem .7rem; font-size: .66rem; letter-spacing: .04em; } .seg { padding: 3px; } }
+  html, body { overflow-x: clip; }
+  .seg .pill { position: absolute; top: 4px; bottom: 4px; left: 4px; border-radius: 999px; background: linear-gradient(100deg, #b98d4a, #e6cf98 50%, #c9a45c); box-shadow: 0 6px 24px rgba(201,164,92,.35); transition: transform .5s cubic-bezier(.7,0,.2,1), width .5s cubic-bezier(.7,0,.2,1); }
+
+  /* Views */
+  .view { display: none; }
+  .view.active { display: block; animation: viewIn .7s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(14px); filter: blur(6px);} to { opacity: 1; transform: none; filter: none; } }
+
+  /* Quiz */
+  .step { display: none; }
+  .step.active { display: block; animation: stepIn .55s cubic-bezier(.2,.7,.2,1) both; }
+  .step.back { animation-name: stepBack; }
+  @keyframes stepIn { from { opacity: 0; transform: translateX(28px);} to { opacity: 1; transform: none; } }
+  @keyframes stepBack { from { opacity: 0; transform: translateX(-28px);} to { opacity: 1; transform: none; } }
+
+  .opt {
+    position: relative; text-align: left; width: 100%;
+    border-radius: 18px; padding: 1.1rem 1.15rem; cursor: pointer;
+    background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.01));
+    border: 1px solid rgba(255,255,255,.08);
+    transition: border-color .3s, transform .3s, background .3s, box-shadow .3s;
+  }
+  .opt:hover { border-color: rgba(201,164,92,.45); transform: translateY(-2px); background: linear-gradient(180deg, rgba(201,164,92,.07), rgba(255,255,255,.01)); }
+  .opt.selected { border-color: #c9a45c; background: linear-gradient(180deg, rgba(201,164,92,.14), rgba(201,164,92,.03)); box-shadow: 0 0 0 1px rgba(201,164,92,.5) inset, 0 18px 40px -18px rgba(201,164,92,.45); }
+  .opt .check { position: absolute; top: 14px; right: 14px; width: 22px; height: 22px; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); display: grid; place-items: center; transition: all .3s; }
+  .opt.selected .check { background: #c9a45c; border-color: #c9a45c; }
+  .opt.selected .check svg { opacity: 1; transform: scale(1); }
+  .opt .check svg { opacity: 0; transform: scale(.5); transition: all .3s; }
+  .opt .ico { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(201,164,92,.08); border: 1px solid rgba(201,164,92,.22); color: #e6cf98; }
+
+  .field { position: relative; }
+  .field input {
+    width: 100%; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.1); border-radius: 14px;
+    padding: 1.35rem 1rem .55rem; color: #f4f1ea; font-size: .95rem; outline: none; transition: border-color .25s, background .25s;
+  }
+  .field input:focus { border-color: #c9a45c; background: rgba(201,164,92,.05); }
+  .field label { position: absolute; left: 1rem; top: 1rem; font-size: .9rem; color: #8a93a6; pointer-events: none; transition: all .2s; }
+  .field input:focus + label, .field input:not(:placeholder-shown) + label { top: .45rem; font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: #c9a45c; }
+  .field.invalid input { border-color: #e0736b; }
+  .field .err { display: none; font-size: .72rem; color: #e0736b; margin-top: .35rem; padding-left: .25rem; }
+  .field.invalid .err { display: block; }
+
+  .btn-gold {
+    position: relative; overflow: hidden;
+    background: linear-gradient(100deg, #b38544, #e6cf98 48%, #c9a45c 70%, #a87b3f);
+    color: #0b0d12; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: .78rem;
+    border-radius: 999px; padding: .95rem 1.6rem; transition: transform .25s, box-shadow .25s, opacity .25s;
+    box-shadow: 0 10px 30px -10px rgba(201,164,92,.6);
+  }
+  .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 16px 40px -12px rgba(201,164,92,.75); }
+  .btn-gold:disabled { opacity: .35; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-gold::after { content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent); transform: skewX(-20deg); animation: sheen 3.8s infinite; }
+  @keyframes sheen { 0%, 60% { left: -60%; } 100% { left: 130%; } }
+  .btn-ghost { border: 1px solid rgba(255,255,255,.14); color: #cfd3dc; border-radius: 999px; padding: .9rem 1.4rem; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; transition: all .25s; }
+  .btn-ghost:hover { border-color: rgba(201,164,92,.6); color: #e6cf98; }
+
+  /* VIP card */
+  .vip-wrap { perspective: 1400px; }
+  .vip {
+    position: relative; border-radius: 22px; aspect-ratio: 1.586 / 1; width: 100%; max-width: 460px; margin: 0 auto;
+    background:
+      radial-gradient(120% 140% at 0% 0%, rgba(230,207,152,.22), transparent 45%),
+      radial-gradient(90% 120% at 100% 100%, rgba(30,64,140,.55), transparent 55%),
+      linear-gradient(135deg, #0e1a33 0%, #060a14 60%, #0c1428 100%);
+    border: 1px solid rgba(230,207,152,.35);
+    box-shadow: 0 40px 80px -30px rgba(0,0,0,.9), 0 0 0 1px rgba(0,0,0,.4) inset, 0 0 60px -20px rgba(201,164,92,.35);
+    transform-style: preserve-3d; transition: transform .15s ease-out; overflow: hidden;
+    animation: cardIn 1.1s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes cardIn { from { opacity: 0; transform: rotateX(25deg) rotateY(-30deg) translateY(30px) scale(.9);} to { opacity: 1; transform: none; } }
+  .vip .shine { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(400px circle at var(--mx,30%) var(--my,20%), rgba(255,240,200,.18), transparent 40%); mix-blend-mode: screen; }
+  .vip .lines { position: absolute; inset: 0; opacity: .25; background-image: repeating-linear-gradient(115deg, transparent 0 18px, rgba(230,207,152,.12) 18px 19px); mask-image: linear-gradient(90deg, transparent 30%, #000 100%); }
+  .chip { width: 46px; height: 34px; border-radius: 7px; background: linear-gradient(135deg, #f3e2b3, #b38544 60%, #e6cf98); box-shadow: inset 0 0 0 1px rgba(0,0,0,.25); position: relative; }
+  .chip::before, .chip::after { content: ""; position: absolute; inset: 8px 0; border-top: 1px solid rgba(0,0,0,.25); border-bottom: 1px solid rgba(0,0,0,.25); }
+  .chip::after { inset: 0 15px; border: 0; border-left: 1px solid rgba(0,0,0,.25); border-right: 1px solid rgba(0,0,0,.25); }
+
+  .code-char { display: inline-block; min-width: .62em; text-align: center; }
+
+  /* Dashboard */
+  .kpi { position: relative; overflow: hidden; border-radius: 20px; padding: 1.35rem 1.4rem; }
+  .kpi::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,164,92,.6), transparent); }
+  .tag { font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; }
+  .live-dot { width: 8px; height: 8px; border-radius: 999px; background: #4ade80; box-shadow: 0 0 0 0 rgba(74,222,128,.6); animation: pulse 2s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(74,222,128,.55);} 70% { box-shadow: 0 0 0 10px rgba(74,222,128,0);} 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0);} }
+
+  table.crm { width: 100%; border-collapse: separate; border-spacing: 0; }
+  table.crm th { font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: #7f889b; font-weight: 500; text-align: left; padding: .8rem 1rem; border-bottom: 1px solid rgba(255,255,255,.07); white-space: nowrap; }
+  table.crm td { padding: .9rem 1rem; border-bottom: 1px solid rgba(255,255,255,.05); font-size: .85rem; white-space: nowrap; }
+  table.crm tbody tr { transition: background .2s; }
+  table.crm tbody tr:hover { background: rgba(201,164,92,.05); }
+  table.crm tbody tr.fresh { animation: fresh 3s ease-out; }
+  @keyframes fresh { 0% { background: rgba(201,164,92,.28);} 100% { background: transparent; } }
+  .avatar { width: 34px; height: 34px; border-radius: 999px; display: grid; place-items: center; font-size: .72rem; font-weight: 600; color: #0b0d12; }
+  .score { height: 6px; border-radius: 999px; background: rgba(255,255,255,.07); overflow: hidden; width: 70px; }
+  .score > span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #a87b3f, #e6cf98); }
+  .status { display: inline-flex; align-items: center; gap: .4rem; padding: .28rem .65rem; border-radius: 999px; font-size: .7rem; font-weight: 500; }
+  .status.hot { background: rgba(239,108,79,.12); color: #f5a38f; border: 1px solid rgba(239,108,79,.3); }
+  .status.warm { background: rgba(201,164,92,.12); color: #e6cf98; border: 1px solid rgba(201,164,92,.3); }
+  .status.new { background: rgba(96,165,250,.12); color: #a5c8fb; border: 1px solid rgba(96,165,250,.3); }
+  .call-btn { border: 1px solid rgba(201,164,92,.4); color: #e6cf98; border-radius: 999px; padding: .38rem .8rem; font-size: .72rem; display: inline-flex; gap: .4rem; align-items: center; transition: all .2s; }
+  .call-btn:hover { background: #c9a45c; color: #0b0d12; }
+  .call-btn.done { background: rgba(74,222,128,.12); border-color: rgba(74,222,128,.4); color: #86efac; }
+
+  .filter-chip { font-size: .72rem; padding: .4rem .85rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.1); color: #9aa3b5; transition: all .2s; }
+  .filter-chip.active, .filter-chip:hover { border-color: rgba(201,164,92,.55); color: #e6cf98; background: rgba(201,164,92,.08); }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 140%); transition: transform .5s cubic-bezier(.2,.8,.2,1); z-index: 60; }
+  .toast.show { transform: translate(-50%, 0); }
+
+  .typing::after { content: "▍"; color: #c9a45c; animation: blink 1s steps(1) infinite; margin-left: 2px; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .scroll-x { overflow-x: auto; scrollbar-width: thin; scrollbar-color: rgba(201,164,92,.3) transparent; }
+
+  .marquee { display: flex; gap: 3rem; animation: marquee 40s linear infinite; width: max-content; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+</style>
+</head>
+
+<body class="grain min-h-screen">
+<div class="ambient"></div>
+
+<!-- ================= TOP BAR ================= -->
+<header class="sticky top-0 z-50 border-b hairline" style="background: rgba(7,9,15,.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-[72px] flex items-center justify-between gap-2 sm:gap-4">
+    <a href="#" class="flex items-center gap-3 shrink-0" onclick="switchView('buyer');return false;">
+      <svg class="hidden sm:block" width="34" height="34" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#e6cf98"/><stop offset=".55" stop-color="#c9a45c"/><stop offset="1" stop-color="#a87b3f"/></linearGradient></defs>
+        <rect x="1" y="1" width="38" height="38" rx="10" stroke="url(#lg)" stroke-width="1.2"/>
+        <path d="M8 24c3-3 5-3 8 0s5 3 8 0 5-3 8 0" stroke="url(#lg)" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M8 29c3-3 5-3 8 0s5 3 8 0 5-3 8 0" stroke="url(#lg)" stroke-width="1.2" stroke-linecap="round" opacity=".55"/>
+        <path d="M13 19V12l7-4 7 4v7" stroke="url(#lg)" stroke-width="1.6" stroke-linejoin="round"/>
+      </svg>
+      <div class="leading-none">
+        <div class="font-serif text-[1.15rem] sm:text-[1.45rem] tracking-[.1em] sm:tracking-[.12em] gold-text font-semibold">SEA HOUZ</div>
+        <div class="text-[.58rem] tracking-[.32em] text-mist uppercase mt-1 hidden sm:block">Baja Ocean Residences</div>
+      </div>
+    </a>
+
+    <div class="seg" id="seg">
+      <span class="pill" id="segPill"></span>
+      <button data-view="buyer" class="active" onclick="switchView('buyer')">
+        <span class="hidden sm:inline">El Comprador · </span>Smart Offer
+      </button>
+      <button data-view="owner" onclick="switchView('owner')">
+        <span class="hidden sm:inline">El Propietario · </span>Dashboard
+      </button>
+    </div>
+
+    <div class="hidden lg:flex items-center gap-2 text-[.7rem] tracking-[.18em] uppercase text-mist shrink-0">
+      <span class="live-dot"></span> Direct-to-Developer
+    </div>
+  </div>
+</header>
+
+<!-- ================= VIEW 1: BUYER ================= -->
+<main id="view-buyer" class="view active">
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-16 pb-16">
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+
+      <!-- Hero copy -->
+      <div class="lg:col-span-5 lg:sticky lg:top-28">
+        <div class="inline-flex items-center gap-2 rounded-full glass-gold px-3 py-1.5 text-[.66rem] tracking-[.22em] uppercase text-gold2">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.7L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+          Direct Developer Access
+        </div>
+        <h1 class="font-serif text-[2.7rem] sm:text-6xl leading-[1.02] mt-6 text-[#f4f1ea]">
+          Baja Ocean <br/><span class="italic gold-text">Residences</span>
+        </h1>
+        <p class="mt-6 text-[1.02rem] leading-relaxed text-[#b9bfcb] max-w-md">
+          Oceanfront living on the Tijuana–Rosarito corridor, 25 minutes from San Diego.
+          Deal directly with the developer. No brokers, no middlemen, no inflated fees.
+        </p>
+
+        <div class="mt-9 grid grid-cols-3 gap-3 max-w-md">
+          <div class="glass rounded-2xl p-4">
+            <div class="font-serif text-3xl gold-text">0%</div>
+            <div class="text-[.66rem] tracking-[.14em] uppercase text-mist mt-1">Broker markup</div>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="font-serif text-3xl gold-text">25<span class="text-lg">min</span></div>
+            <div class="text-[.66rem] tracking-[.14em] uppercase text-mist mt-1">To San Diego</div>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="font-serif text-3xl gold-text">48<span class="text-lg">h</span></div>
+            <div class="text-[.66rem] tracking-[.14em] uppercase text-mist mt-1">Owner callback</div>
+          </div>
+        </div>
+
+        <ul class="mt-9 space-y-3 text-sm text-[#c9ced8] max-w-md">
+          <li class="flex gap-3"><span class="text-gold">◆</span> Private pricing released only to verified VIP buyers</li>
+          <li class="flex gap-3"><span class="text-gold">◆</span> Funds go straight to the developer's escrow, never through an agency</li>
+          <li class="flex gap-3"><span class="text-gold">◆</span> Bilingual closing team, US-friendly fideicomiso guidance</li>
+        </ul>
+      </div>
+
+      <!-- Quiz card -->
+      <div class="lg:col-span-7">
+        <div id="quizCard" class="glass rounded-[28px] p-5 sm:p-8 lg:p-10 relative overflow-hidden">
+          <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full" style="background: radial-gradient(circle, rgba(201,164,92,.18), transparent 70%);"></div>
+
+          <!-- Progress -->
+          <div id="progressWrap" class="relative">
+            <div class="flex items-center justify-between text-[.66rem] tracking-[.2em] uppercase text-mist">
+              <span>Smart Offer · <span id="stepLabel">Step 1 of 4</span></span>
+              <span id="stepName" class="text-gold2">Residence</span>
+            </div>
+            <div class="mt-3 grid grid-cols-4 gap-2">
+              <div class="h-[3px] rounded-full bg-white/10 overflow-hidden"><div class="pbar h-full w-0 transition-all duration-700" style="background:linear-gradient(90deg,#a87b3f,#e6cf98)"></div></div>
+              <div class="h-[3px] rounded-full bg-white/10 overflow-hidden"><div class="pbar h-full w-0 transition-all duration-700" style="background:linear-gradient(90deg,#a87b3f,#e6cf98)"></div></div>
+              <div class="h-[3px] rounded-full bg-white/10 overflow-hidden"><div class="pbar h-full w-0 transition-all duration-700" style="background:linear-gradient(90deg,#a87b3f,#e6cf98)"></div></div>
+              <div class="h-[3px] rounded-full bg-white/10 overflow-hidden"><div class="pbar h-full w-0 transition-all duration-700" style="background:linear-gradient(90deg,#a87b3f,#e6cf98)"></div></div>
+            </div>
+          </div>
+
+          <!-- STEP 1 -->
+          <div class="step active relative" data-step="1">
+            <h2 class="font-serif text-3xl sm:text-4xl mt-8 text-[#f4f1ea]">Which residence fits your next chapter?</h2>
+            <p class="text-sm text-mist mt-2">Choose one. Pricing below reflects current developer-direct availability.</p>
+            <div class="grid sm:grid-cols-2 gap-3 mt-7" data-group="type">
+              <button class="opt" data-value="Oceanfront Penthouse" data-budget="1450000">
+                <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="3"><path d="M5 12l5 5 9-11"/></svg></span>
+                <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6M9 10h.01M15 10h.01"/></svg></div>
+                <div class="mt-4 font-medium text-[#f4f1ea]">Oceanfront Penthouse</div>
+                <div class="text-xs text-mist mt-1">3 BR · 3,200 sq ft · private rooftop</div>
+                <div class="text-sm gold-text font-semibold mt-3">From $1.45M USD</div>
+              </button>
+              <button class="opt" data-value="3 Bedroom Residence" data-budget="890000">
+                <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="3"><path d="M5 12l5 5 9-11"/></svg></span>
+                <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10M15 10v10"/></svg></div>
+                <div class="mt-4 font-medium text-[#f4f1ea]">3 Bedroom Residence</div>
+                <div class="text-xs text-mist mt-1">2,150 sq ft · wraparound terrace</div>
+                <div class="text-sm gold-text font-semibold mt-3">From $890K USD</div>
+              </button>
+              <button class="opt" data-value="2 Bedroom Ocean View" data-budget="640000">
+                <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="3"><path d="M5 12l5 5 9-11"/></svg></span>
+                <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 17c2-2 4-2 6 0s4 2 6 0 4-2 6 0M4 13V6a2 2 0 012-2h12a2 2 0 012 2v7"/></svg></div>
+                <div class="mt-4 font-medium text-[#f4f1ea]">2 Bedroom Ocean View</div>
+                <div class="text-xs text-mist mt-1">1,480 sq ft · floor-to-ceiling glass</div>
+                <div class="text-sm gold-text font-semibold mt-3">From $640K USD</div>
+              </button>
+              <button class="opt" data-value="1 Bedroom Signature Suite" data-budget="420000">
+                <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="3"><path d="M5 12l5 5 9-11"/></svg></span>
+                <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 18v-6a2 2 0 012-2h14a2 2 0 012 2v6M3 18h18M3 18v2M21 18v2M7 10V7a2 2 0 012-2h6a2 2 0 012 2v3"/></svg></div>
+                <div class="mt-4 font-medium text-[#f4f1ea]">1 Bedroom Signature Suite</div>
+                <div class="text-xs text-mist mt-1">980 sq ft · turnkey furnished</div>
+                <div class="text-sm gold-text font-semibold mt-3">From $420K USD</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- STEP 2 -->
+          <div class="step relative" data-step="2">
+            <h2 class="font-serif text-3xl sm:text-4xl mt-8 text-[#f4f1ea]">What's the one amenity you won't live without?</h2>
+            <p class="text-sm text-mist mt-2">We'll prioritize units that deliver it, no compromises.</p>
+            <div class="grid sm:grid-cols-2 gap-3 mt-7" data-group="amenity">
+              <button class="opt" data-value="Ocean-view balcony">
+                <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="3"><path d="M5 12l5 5 9-11"/></svg></span>
+                <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="3"/><path d="M12 2v1M5.6 4.6l.7.7M18.4 4.6l-.7.7M2 15c2.5-2 5-2 7.5 0s5 2 7.5 0 3.5-1.6 5-1M2 20c2.5-2 5-2 7.5 0s5 2 7.5 0 3.5-1.6 5-1"/></svg></div>
+                <div class="mt-4 font-medium text-[#f4f1ea]">Ocean-view balcony</div>
+                <div class="text-xs text-mist mt-1">Unobstructed Pacific sunsets from home</div>
+              </button>
+              <button class="opt" data-value="Spa bathroom, dual shower">
+                <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="3"><path d="M5 12l5 5 9-11"/></svg></span>
+                <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 4v3M17 4v3M5 7h4M15 7h4M7 10v.01M7 13v.01M17 10v.01M17 13v.01M3 21h18"/></svg></div>
+                <div class="mt-4 font-medium text-[#f4f1ea]">Spa bathroom, dual shower</div>
+                <div class="text-xs text-mist mt-1">Marble finishes, rainfall heads for two</div>
+              </button>
+              <button class="opt" data-value="Private jacuzzi">
+                <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="3"><path d="M5 12l5 5 9-11"/></svg></span>
+                <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 13h18v3a4 4 0 01-4 4H7a4 4 0 01-4-4v-3zM8 9c0-1.5 1-1.5 1-3M12 9c0-1.5 1-1.5 1-3M16 9c0-1.5 1-1.5 1-3"/></svg></div>
+                <div class="mt-4 font-medium text-[#f4f1ea]">Private jacuzzi</div>
+                <div class="text-xs text-mist mt-1">Heated terrace hot tub, yours alone</div>
+              </button>
+              <button class="opt" data-value="24/7 gated security">
+                <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="3"><path d="M5 12l5 5 9-11"/></svg></span>
+                <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+                <div class="mt-4 font-medium text-[#f4f1ea]">24/7 gated security</div>
+                <div class="text-xs text-mist mt-1">Concierge, CCTV and controlled access</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- STEP 3 -->
+          <div class="step relative" data-step="3">
+            <h2 class="font-serif text-3xl sm:text-4xl mt-8 text-[#f4f1ea]">What's the plan for your Baja home?</h2>
+            <p class="text-sm text-mist mt-2">This tailors the financials the owner prepares for you.</p>
+            <div class="grid gap-3 mt-7" data-group="goal">
+              <button class="opt flex items-center gap-4" data-value="Full-time retirement">
+                <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="3"><path d="M5 12l5 5 9-11"/></svg></span>
+                <div class="ico shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22c4-3 8-7 8-12a8 8 0 10-16 0c0 5 4 9 8 12z"/><circle cx="12" cy="10" r="3"/></svg></div>
+                <div class="pr-8"><div class="font-medium text-[#f4f1ea]">Full-time retirement</div><div class="text-xs text-mist mt-1">Year-round living, residency and healthcare guidance included</div></div>
+              </button>
+              <button class="opt flex items-center gap-4" data-value="Weekend getaway">
+                <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="3"><path d="M5 12l5 5 9-11"/></svg></span>
+                <div class="ico shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+                <div class="pr-8"><div class="font-medium text-[#f4f1ea]">Weekend getaway</div><div class="text-xs text-mist mt-1">Drive down Friday, ocean breakfast Saturday, SENTRI lane home Sunday</div></div>
+              </button>
+              <button class="opt flex items-center gap-4" data-value="Airbnb investment">
+                <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="3"><path d="M5 12l5 5 9-11"/></svg></span>
+                <div class="ico shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg></div>
+                <div class="pr-8"><div class="font-medium text-[#f4f1ea]">Airbnb investment</div><div class="text-xs text-mist mt-1">Projected 9–12% gross yield with optional on-site management</div></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- STEP 4 -->
+          <div class="step relative" data-step="4">
+            <h2 class="font-serif text-3xl sm:text-4xl mt-8 text-[#f4f1ea]">Unlock your Owner Direct Access.</h2>
+            <p class="text-sm text-mist mt-2">The developer reviews every VIP request personally. Your information is never sold or shared with agencies.</p>
+            <form id="leadForm" class="mt-7 grid gap-3" novalidate>
+              <div class="field">
+                <input id="fName" type="text" placeholder=" " autocomplete="name" />
+                <label for="fName">Full name</label>
+                <div class="err">Please enter your full name.</div>
+              </div>
+              <div class="grid sm:grid-cols-2 gap-3">
+                <div class="field">
+                  <input id="fPhone" type="tel" placeholder=" " autocomplete="tel" inputmode="tel" />
+                  <label for="fPhone">US phone · (619) 555-0142</label>
+                  <div class="err">Enter a valid 10-digit US number.</div>
+                </div>
+                <div class="field">
+                  <input id="fEmail" type="email" placeholder=" " autocomplete="email" />
+                  <label for="fEmail">Email</label>
+                  <div class="err">Enter a valid email address.</div>
+                </div>
+              </div>
+              <label class="flex items-start gap-3 text-xs text-mist mt-2 cursor-pointer select-none">
+                <input type="checkbox" checked class="mt-0.5 accent-[#c9a45c]" />
+                I agree to be contacted directly by the developer about Sea Houz residences. No spam, unsubscribe anytime.
+              </label>
+            </form>
+          </div>
+
+          <!-- RESULT -->
+          <div class="step relative" data-step="5">
+            <div class="text-center mt-2">
+              <div class="inline-flex items-center gap-2 text-[.66rem] tracking-[.22em] uppercase text-gold2">
+                <span class="live-dot"></span> VIP access granted
+              </div>
+              <h2 class="font-serif text-3xl sm:text-4xl mt-3 text-[#f4f1ea]">Welcome, <span id="rName" class="italic gold-text">Guest</span>.</h2>
+              <p class="text-sm text-mist mt-2 max-w-md mx-auto">Your request skipped the agency line. The owner's office will call you within 48 hours with private pricing.</p>
+            </div>
+
+            <div class="vip-wrap mt-8">
+              <div class="vip" id="vipCard">
+                <div class="lines"></div>
+                <div class="shine"></div>
+                <div class="relative h-full p-5 sm:p-7 flex flex-col justify-between">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="font-serif text-xl tracking-[.14em] gold-text font-semibold">SEA HOUZ</div>
+                      <div class="text-[.52rem] tracking-[.3em] text-mist uppercase mt-0.5">Owner Direct Access</div>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-[.52rem] tracking-[.25em] text-mist uppercase">Tier</div>
+                      <div class="text-xs font-semibold text-gold2 tracking-[.2em]" id="vipTier">PLATINUM</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <div class="chip"></div>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e6cf98" stroke-width="1.5" opacity=".7"><path d="M8.5 16.5a6 6 0 000-9M12 19a9.5 9.5 0 000-14M5 14a2.5 2.5 0 000-4"/></svg>
+                  </div>
+                  <div>
+                    <div class="text-[.52rem] tracking-[.3em] text-mist uppercase">Código VIP de Acceso Directo de Dueño</div>
+                    <div id="vipCode" class="font-mono text-[1.15rem] sm:text-2xl tracking-[.12em] text-[#f6ead0] mt-1" style="text-shadow: 0 0 18px rgba(230,207,152,.35)">SHZ-••••-••••</div>
+                  </div>
+                  <div class="flex items-end justify-between gap-3">
+                    <div class="min-w-0">
+                      <div class="text-[.52rem] tracking-[.25em] text-mist uppercase">Member</div>
+                      <div id="vipName" class="text-sm font-medium tracking-[.08em] uppercase truncate">—</div>
+                    </div>
+                    <div class="text-right min-w-0">
+                      <div class="text-[.52rem] tracking-[.25em] text-mist uppercase">Interest</div>
+                      <div id="vipType" class="text-xs text-gold2 truncate">—</div>
+                    </div>
+                    <div class="text-right shrink-0">
+                      <div class="text-[.52rem] tracking-[.25em] text-mist uppercase">Valid thru</div>
+                      <div id="vipValid" class="text-xs font-mono">—</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid sm:grid-cols-3 gap-3 mt-8 text-left">
+              <div class="glass rounded-2xl p-4"><div class="tag text-mist">Residence</div><div id="sumType" class="text-sm mt-1 text-[#f4f1ea]">—</div></div>
+              <div class="glass rounded-2xl p-4"><div class="tag text-mist">Must-have</div><div id="sumAmenity" class="text-sm mt-1 text-[#f4f1ea]">—</div></div>
+              <div class="glass rounded-2xl p-4"><div class="tag text-mist">Goal</div><div id="sumGoal" class="text-sm mt-1 text-[#f4f1ea]">—</div></div>
+            </div>
+
+            <div class="flex flex-wrap gap-3 justify-center mt-8">
+              <button class="btn-gold" onclick="copyCode()" id="copyBtn">Copy VIP code</button>
+              <button class="btn-ghost" onclick="switchView('owner')">See it in the owner dashboard →</button>
+              <button class="btn-ghost" onclick="resetQuiz()">Start over</button>
+            </div>
+          </div>
+
+          <!-- Nav -->
+          <div id="quizNav" class="relative flex items-center justify-between mt-9 pt-6 border-t border-white/5">
+            <button id="backBtn" class="btn-ghost invisible" onclick="prevStep()">← Back</button>
+            <div class="hidden sm:flex items-center gap-2 text-[.68rem] text-mist">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+              Private &amp; encrypted
+            </div>
+            <button id="nextBtn" class="btn-gold" disabled onclick="nextStep()">Continue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marquee strip -->
+  <section class="border-y hairline overflow-hidden py-5">
+    <div class="marquee text-[.72rem] tracking-[.3em] uppercase text-mist">
+      <span>Rosarito Beach</span><span class="text-gold">◆</span><span>Punta Bandera</span><span class="text-gold">◆</span><span>Playas de Tijuana</span><span class="text-gold">◆</span><span>Real del Mar</span><span class="text-gold">◆</span><span>Las Gaviotas</span><span class="text-gold">◆</span><span>Bajamar</span><span class="text-gold">◆</span><span>Popotla</span><span class="text-gold">◆</span>
+      <span>Rosarito Beach</span><span class="text-gold">◆</span><span>Punta Bandera</span><span class="text-gold">◆</span><span>Playas de Tijuana</span><span class="text-gold">◆</span><span>Real del Mar</span><span class="text-gold">◆</span><span>Las Gaviotas</span><span class="text-gold">◆</span><span>Bajamar</span><span class="text-gold">◆</span><span>Popotla</span><span class="text-gold">◆</span>
+    </div>
+  </section>
+
+  <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col sm:flex-row gap-3 justify-between text-xs text-mist">
+    <span>© 2026 Sea Houz · Baja Ocean Residences. Direct from the developer.</span>
+    <span>Tijuana – Rosarito Corridor · Baja California, México</span>
+  </footer>
+</main>
+
+<!-- ================= VIEW 2: OWNER DASHBOARD ================= -->
+<main id="view-owner" class="view" lang="es">
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
+
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+      <div>
+        <div class="flex items-center gap-2 text-[.66rem] tracking-[.22em] uppercase text-mist">
+          <span class="live-dot"></span> En vivo · <span id="clock">--:--</span> · Corredor Tijuana–Rosarito
+        </div>
+        <h1 class="font-serif text-4xl sm:text-5xl mt-3 text-[#f4f1ea]">Centro de <span class="italic gold-text">Inteligencia</span></h1>
+        <p class="text-sm text-mist mt-2 max-w-xl">Tus compradores, tus datos, tu control. Cero inmobiliarias en medio: cada prospecto llega directo a ti.</p>
+      </div>
+      <div class="flex flex-wrap gap-2 items-center">
+        <button class="filter-chip" data-range="7">7 días</button>
+        <button class="filter-chip active" data-range="30">30 días</button>
+        <button class="filter-chip" data-range="90">90 días</button>
+        <button class="btn-ghost !py-2.5 !px-4 ml-1" onclick="exportCSV()">
+          <span class="inline-flex items-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Exportar CSV</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-9">
+      <div class="kpi glass">
+        <div class="flex items-center justify-between"><span class="tag text-mist">Total leads capturados</span>
+          <span class="text-[.7rem] text-emerald-300 bg-emerald-400/10 border border-emerald-400/25 rounded-full px-2 py-0.5">▲ 18.4%</span></div>
+        <div class="font-serif text-5xl mt-3 text-[#f4f1ea]" id="kpiLeads" data-count="1284">0</div>
+        <div class="text-xs text-mist mt-2">vs. 1,084 el periodo anterior</div>
+        <div class="mt-3 h-[38px] relative"><canvas id="spark1"></canvas></div>
+      </div>
+      <div class="kpi glass">
+        <div class="flex items-center justify-between"><span class="tag text-mist">Origen principal</span>
+          <span class="text-[.7rem] text-gold2 bg-[#c9a45c]/10 border border-[#c9a45c]/30 rounded-full px-2 py-0.5">CA, EE. UU.</span></div>
+        <div class="font-serif text-[2.6rem] leading-[1.1] mt-3 text-[#f4f1ea]">San Diego</div>
+        <div class="text-xs text-mist mt-2"><span class="text-gold2 font-medium">38%</span> de los leads · Orange County le sigue con 24%</div>
+        <div class="mt-4 h-1.5 rounded-full bg-white/5 overflow-hidden flex">
+          <span style="width:38%;background:#c9a45c"></span><span style="width:24%;background:#8a6a35"></span><span style="width:17%;background:#3b5b9a"></span><span style="width:21%;background:#2a3550"></span>
+        </div>
+      </div>
+      <div class="kpi glass">
+        <div class="flex items-center justify-between"><span class="tag text-mist">Presupuesto promedio</span>
+          <span class="text-[.7rem] text-emerald-300 bg-emerald-400/10 border border-emerald-400/25 rounded-full px-2 py-0.5">▲ 6.1%</span></div>
+        <div class="font-serif text-5xl mt-3 text-[#f4f1ea]">$<span id="kpiBudget" data-count="742">0</span>K</div>
+        <div class="text-xs text-mist mt-2">USD · rango típico $520K – $1.2M</div>
+        <div class="mt-3 h-[38px] relative"><canvas id="spark2"></canvas></div>
+      </div>
+      <div class="kpi glass-gold">
+        <div class="flex items-center justify-between"><span class="tag text-gold2">Listos para llamada</span>
+          <span class="text-[.7rem] text-[#f5a38f] bg-[#ef6c4f]/10 border border-[#ef6c4f]/30 rounded-full px-2 py-0.5">🔥 Prioridad</span></div>
+        <div class="font-serif text-5xl mt-3 gold-text" id="kpiReady" data-count="47">0</div>
+        <div class="text-xs text-[#c9ced8] mt-2">Pipeline estimado <span class="text-gold2 font-medium" id="kpiPipeline">$34.9M</span> · Comisión potencial <span class="text-gold2 font-medium">$987K</span></div>
+        <div class="mt-4 h-1.5 rounded-full bg-white/5 overflow-hidden"><span class="block h-full" style="width:72%;background:linear-gradient(90deg,#a87b3f,#e6cf98)"></span></div>
+      </div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="grid lg:grid-cols-12 gap-4 mt-4">
+      <div class="lg:col-span-7 glass rounded-[22px] p-5 sm:p-7">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="tag text-mist">Lo que piden los compradores</div>
+            <h3 class="font-serif text-2xl mt-1 text-[#f4f1ea]">Preferencias de Amenidades</h3>
+          </div>
+          <div class="text-[.7rem] text-mist text-right">% de leads que lo<br/>marcan como indispensable</div>
+        </div>
+        <div class="relative mt-5" style="height: 320px"><canvas id="amenityChart"></canvas></div>
+      </div>
+      <div class="lg:col-span-5 glass rounded-[22px] p-5 sm:p-7">
+        <div class="tag text-mist">De dónde vienen</div>
+        <h3 class="font-serif text-2xl mt-1 text-[#f4f1ea]">Ubicación de Origen</h3>
+        <div class="grid grid-cols-5 gap-4 items-center mt-5">
+          <div class="col-span-5 sm:col-span-3 relative" style="height: 240px">
+            <canvas id="originChart"></canvas>
+            <div class="absolute inset-0 grid place-items-center pointer-events-none">
+              <div class="text-center"><div class="font-serif text-4xl gold-text">83%</div><div class="tag text-mist mt-1">California</div></div>
+            </div>
+          </div>
+          <ul id="originLegend" class="col-span-5 sm:col-span-2 space-y-2.5 text-sm"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid lg:grid-cols-12 gap-4 mt-4">
+      <!-- Trend -->
+      <div class="lg:col-span-8 glass rounded-[22px] p-5 sm:p-7">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div class="tag text-mist">Rendimiento de campaña</div>
+            <h3 class="font-serif text-2xl mt-1 text-[#f4f1ea]">Leads por semana · EE. UU. vs. México</h3>
+          </div>
+          <div class="flex gap-4 text-xs text-mist">
+            <span class="flex items-center gap-2"><span class="w-3 h-[3px] rounded bg-[#c9a45c]"></span>EE. UU.</span>
+            <span class="flex items-center gap-2"><span class="w-3 h-[3px] rounded bg-[#5b7fd0]"></span>México</span>
+          </div>
+        </div>
+        <div class="relative mt-5" style="height: 260px"><canvas id="trendChart"></canvas></div>
+      </div>
+
+      <!-- AI insight -->
+      <div class="lg:col-span-4 rounded-[22px] p-6 sm:p-7 relative overflow-hidden" style="background: radial-gradient(120% 90% at 100% 0%, rgba(201,164,92,.22), transparent 55%), linear-gradient(160deg, #10203f, #0a1224 70%); border: 1px solid rgba(201,164,92,.35);">
+        <div class="absolute -bottom-16 -right-10 w-56 h-56 rounded-full blur-2xl" style="background: rgba(91,127,208,.25)"></div>
+        <div class="relative">
+          <div class="flex items-center justify-between">
+            <div class="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-3 py-1 text-[.64rem] tracking-[.2em] uppercase text-gold2">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+              AI &amp; Data Insight
+            </div>
+            <span class="text-[.65rem] text-mist">Actualizado hace 2 min</span>
+          </div>
+          <p class="mt-5 text-[1.02rem] leading-relaxed text-[#eef0f4] min-h-[150px]" id="insightText"></p>
+          <div class="mt-5 grid grid-cols-2 gap-3">
+            <div class="rounded-xl bg-white/5 border border-white/10 p-3"><div class="tag text-mist">CTR esperado</div><div class="text-lg font-semibold text-gold2 mt-1">+31%</div></div>
+            <div class="rounded-xl bg-white/5 border border-white/10 p-3"><div class="tag text-mist">Costo por lead</div><div class="text-lg font-semibold text-emerald-300 mt-1">−22%</div></div>
+          </div>
+          <button class="btn-gold w-full mt-5" onclick="regenInsight()">Generar nuevo insight</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CRM -->
+    <div class="glass rounded-[22px] mt-4 overflow-hidden">
+      <div class="p-5 sm:p-7 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <div class="tag text-mist">CRM Directo · Sin intermediarios</div>
+          <h3 class="font-serif text-2xl mt-1 text-[#f4f1ea]">Leads VIP Listos para Llamada Directa</h3>
+        </div>
+        <div class="flex flex-wrap gap-2" id="crmFilters">
+          <button class="filter-chip active" data-f="all">Todos</button>
+          <button class="filter-chip" data-f="hot">🔥 Calientes</button>
+          <button class="filter-chip" data-f="Oceanfront Penthouse">Penthouse</button>
+          <button class="filter-chip" data-f="Airbnb investment">Inversión Airbnb</button>
+        </div>
+      </div>
+      <div class="scroll-x">
+        <table class="crm">
+          <thead><tr>
+            <th>Prospecto</th><th>Origen</th><th>Interés</th><th>Indispensable</th><th>Objetivo</th><th>Presupuesto</th><th>Score</th><th>Estado</th><th>Código VIP</th><th></th>
+          </tr></thead>
+          <tbody id="crmBody"></tbody>
+        </table>
+      </div>
+      <div class="px-5 sm:px-7 py-4 text-xs text-mist flex justify-between border-t border-white/5">
+        <span id="crmCount">—</span>
+        <span>Datos protegidos · Propiedad exclusiva del desarrollador</span>
+      </div>
+    </div>
+
+    <footer class="pt-10 flex flex-col sm:flex-row gap-3 justify-between text-xs text-mist">
+      <span>Sea Houz · Plataforma Direct-to-Owner · Prototipo con datos de demostración</span>
+      <span>Tus clientes son tuyos. Siempre.</span>
+    </footer>
+  </section>
+</main>
+
+<!-- Toast -->
+<div id="toast" class="toast glass rounded-full px-5 py-3 text-sm flex items-center gap-3 shadow-2xl" style="background: rgba(16,32,63,.92)">
+  <span class="live-dot"></span><span id="toastText">Nuevo lead</span>
+</div>
+
+<script>
+/* =========================================================
+   STATE
+   ========================================================= */
+const state = { step: 1, answers: { type: null, amenity: null, goal: null }, budget: null };
+const TOTAL = 4;
+const stepNames = ['Residence', 'Must-have', 'Goal', 'Access'];
+
+const ES = {
+  'Oceanfront Penthouse': 'Penthouse frente al mar',
+  '3 Bedroom Residence': 'Residencia 3 recámaras',
+  '2 Bedroom Ocean View': '2 recámaras vista al mar',
+  '1 Bedroom Signature Suite': 'Suite 1 recámara',
+  'Ocean-view balcony': 'Balcón vista al mar',
+  'Spa bathroom, dual shower': 'Baño spa doble regadera',
+  'Private jacuzzi': 'Jacuzzi privado',
+  '24/7 gated security': 'Seguridad 24/7',
+  'Full-time retirement': 'Retiro completo',
+  'Weekend getaway': 'Fin de semana',
+  'Airbnb investment': 'Inversión Airbnb'
+};
+
+/* =========================================================
+   VIEW SWITCHING
+   ========================================================= */
+function positionPill() {
+  const active = document.querySelector('#seg button.active');
+  const pill = document.getElementById('segPill');
+  pill.style.width = active.offsetWidth + 'px';
+  pill.style.transform = `translateX(${active.offsetLeft - 4}px)`;
+}
+let chartsReady = false;
+function switchView(v) {
+  document.querySelectorAll('#seg button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+  document.documentElement.lang = v === 'owner' ? 'es' : 'en';
+  positionPill();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (v === 'owner') {
+    if (!chartsReady) { initDashboard(); chartsReady = true; }
+    else { Object.values(charts).forEach(c => c.resize()); }
+  }
+}
+window.addEventListener('resize', positionPill);
+
+/* =========================================================
+   QUIZ
+   ========================================================= */
+document.querySelectorAll('[data-group]').forEach(group => {
+  group.querySelectorAll('.opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      group.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      state.answers[group.dataset.group] = opt.dataset.value;
+      if (opt.dataset.budget) state.budget = +opt.dataset.budget;
+      updateNav();
+      // auto-advance for a fluid feel
+      clearTimeout(window._adv);
+      window._adv = setTimeout(() => { if (state.step < 4) nextStep(); }, 420);
+    });
+  });
+});
+
+function updateNav() {
+  const s = state.step;
+  document.getElementById('backBtn').classList.toggle('invisible', s === 1 || s === 5);
+  const next = document.getElementById('nextBtn');
+  const key = ['type', 'amenity', 'goal'][s - 1];
+  next.disabled = s <= 3 ? !state.answers[key] : false;
+  next.textContent = s === 4 ? 'Generate my VIP code' : 'Continue';
+  document.getElementById('quizNav').style.display = s === 5 ? 'none' : '';
+  document.getElementById('progressWrap').style.display = s === 5 ? 'none' : '';
+  document.getElementById('stepLabel').textContent = `Step ${Math.min(s, 4)} of ${TOTAL}`;
+  document.getElementById('stepName').textContent = stepNames[Math.min(s, 4) - 1];
+  document.querySelectorAll('.pbar').forEach((b, i) => b.style.width = (i < s ? '100%' : '0'));
+}
+
+function showStep(n, back = false) {
+  document.querySelectorAll('.step').forEach(el => { el.classList.remove('active', 'back'); });
+  const el = document.querySelector(`.step[data-step="${n}"]`);
+  if (back) el.classList.add('back');
+  el.classList.add('active');
+  state.step = n;
+  updateNav();
+  if (n === 4) setTimeout(() => document.getElementById('fName').focus({ preventScroll: true }), 350);
+  const card = document.getElementById('quizCard');
+  if (card.getBoundingClientRect().top < 70) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function nextStep() {
+  if (state.step < 4) { showStep(state.step + 1); return; }
+  if (state.step === 4) submitLead();
+}
+function prevStep() { if (state.step > 1) showStep(state.step - 1, true); }
+
+function validate() {
+  const name = document.getElementById('fName');
+  const phone = document.getElementById('fPhone');
+  const email = document.getElementById('fEmail');
+  const digits = phone.value.replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '');
+  const checks = [
+    [name, name.value.trim().split(/\s+/).filter(Boolean).length >= 2 || name.value.trim().length >= 3],
+    [phone, digits.length === 10],
+    [email, /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())]
+  ];
+  let ok = true;
+  checks.forEach(([el, valid]) => { el.parentElement.classList.toggle('invalid', !valid); if (!valid) ok = false; });
+  return ok;
+}
+
+// US phone mask
+document.getElementById('fPhone').addEventListener('input', e => {
+  let d = e.target.value.replace(/\D/g, '');
+  if (d.length === 11 && d[0] === '1') d = d.slice(1);
+  d = d.slice(0, 10);
+  let out = d;
+  if (d.length > 6) out = `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+  else if (d.length > 3) out = `(${d.slice(0,3)}) ${d.slice(3)}`;
+  else if (d.length > 0) out = `(${d}`;
+  e.target.value = out;
+});
+document.querySelectorAll('#leadForm input').forEach(i => i.addEventListener('input', () => i.parentElement.classList.remove('invalid')));
+document.getElementById('leadForm').addEventListener('submit', e => { e.preventDefault(); submitLead(); });
+document.getElementById('leadForm').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submitLead(); } });
+
+function makeCode(name) {
+  const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const r = n => Array.from({ length: n }, () => A[Math.floor(Math.random() * A.length)]).join('');
+  const initials = name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2).padEnd(2, 'X');
+  return `SHZ-${initials}${r(2)}-${r(4)}`;
+}
+
+let lastCode = '';
+function submitLead() {
+  if (!validate()) return;
+  const name = document.getElementById('fName').value.trim();
+  const phone = document.getElementById('fPhone').value.trim();
+  const email = document.getElementById('fEmail').value.trim();
+  const code = makeCode(name);
+  lastCode = code;
+
+  const first = name.split(/\s+/)[0];
+  document.getElementById('rName').textContent = first.charAt(0).toUpperCase() + first.slice(1);
+  document.getElementById('vipName').textContent = name;
+  document.getElementById('vipType').textContent = state.answers.type;
+  const d = new Date(); d.setMonth(d.getMonth() + 3);
+  document.getElementById('vipValid').textContent = String(d.getMonth() + 1).padStart(2, '0') + '/' + String(d.getFullYear()).slice(2);
+  document.getElementById('vipTier').textContent = state.budget >= 1000000 ? 'BLACK' : state.budget >= 800000 ? 'PLATINUM' : 'GOLD';
+  document.getElementById('sumType').textContent = state.answers.type;
+  document.getElementById('sumAmenity').textContent = state.answers.amenity;
+  document.getElementById('sumGoal').textContent = state.answers.goal;
+
+  showStep(5);
+  scrambleCode(code);
+
+  // push into owner CRM, "real time"
+  const lead = {
+    name, phone, email, origin: guessOrigin(phone), type: state.answers.type, amenity: state.answers.amenity,
+    goal: state.answers.goal, budget: state.budget || 640000, score: 96, status: 'hot', code, fresh: true
+  };
+  leads.unshift(lead);
+  liveBump = (liveBump || 0) + 1;
+  bumpAmenity(state.answers.amenity);
+  if (chartsReady) { renderCRM(); updateKpisLive(); }
+  showToast(`Nuevo lead VIP: ${name} · ${ES[lead.type] || lead.type}`);
+}
+
+function guessOrigin(phone) {
+  const area = phone.replace(/\D/g, '').slice(-10, -7);
+  const map = { '619': 'San Diego, CA', '858': 'San Diego, CA', '760': 'Carlsbad, CA', '442': 'Oceanside, CA',
+    '949': 'Newport Beach, CA', '714': 'Irvine, CA', '657': 'Anaheim, CA', '310': 'Santa Monica, CA',
+    '213': 'Los Angeles, CA', '323': 'Los Angeles, CA', '818': 'Burbank, CA', '626': 'Pasadena, CA',
+    '480': 'Scottsdale, AZ', '602': 'Phoenix, AZ', '702': 'Las Vegas, NV', '512': 'Austin, TX', '206': 'Seattle, WA', '415': 'San Francisco, CA' };
+  return map[area] || 'Estados Unidos';
+}
+
+function scrambleCode(code) {
+  const el = document.getElementById('vipCode');
+  const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let frame = 0; const total = 26;
+  const iv = setInterval(() => {
+    frame++;
+    el.innerHTML = code.split('').map((ch, i) => {
+      if (ch === '-') return '<span class="code-char text-gold">-</span>';
+      const settle = Math.floor((i / code.length) * total);
+      const c = frame >= settle ? ch : A[Math.floor(Math.random() * A.length)];
+      return `<span class="code-char">${c}</span>`;
+    }).join('');
+    if (frame >= total) clearInterval(iv);
+  }, 45);
+}
+
+function copyCode() {
+  const btn = document.getElementById('copyBtn');
+  const done = () => { btn.textContent = 'Copied ✓'; setTimeout(() => btn.textContent = 'Copy VIP code', 1800); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(lastCode).then(done, done);
+  else {
+    const t = document.createElement('textarea'); t.value = lastCode; document.body.appendChild(t); t.select();
+    try { document.execCommand('copy'); } catch (e) {} t.remove(); done();
+  }
+}
+
+function resetQuiz() {
+  state.answers = { type: null, amenity: null, goal: null }; state.budget = null;
+  document.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+  document.getElementById('leadForm').reset();
+  document.querySelectorAll('.field').forEach(f => f.classList.remove('invalid'));
+  showStep(1, true);
+}
+
+// 3D tilt on VIP card
+(() => {
+  const card = document.getElementById('vipCard');
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    card.style.animation = 'none';
+    card.style.transform = `rotateY(${(x - .5) * 16}deg) rotateX(${(.5 - y) * 12}deg)`;
+    card.style.setProperty('--mx', (x * 100) + '%'); card.style.setProperty('--my', (y * 100) + '%');
+  });
+  card.addEventListener('mouseleave', () => { card.style.transform = 'none'; });
+})();
+
+/* =========================================================
+   DASHBOARD DATA (fictitious demo data)
+   ========================================================= */
+let liveBump = 0;
+const amenityData = [
+  { k: 'Balcón vista al mar', v: 84, src: 'Ocean-view balcony' },
+  { k: 'Baño spa doble regadera', v: 73, src: 'Spa bathroom, dual shower' },
+  { k: 'Seguridad 24/7', v: 61, src: '24/7 gated security' },
+  { k: 'Jacuzzi privado', v: 48, src: 'Private jacuzzi' },
+  { k: 'Rooftop / alberca infinita', v: 42 },
+  { k: 'Estacionamiento x2', v: 29 }
+];
+const originData = [
+  { k: 'San Diego', v: 38, c: '#c9a45c' },
+  { k: 'Orange County', v: 24, c: '#8a6a35' },
+  { k: 'Los Ángeles', v: 17, c: '#3b5b9a' },
+  { k: 'Resto de California', v: 4, c: '#2b4577' },
+  { k: 'Arizona / Nevada', v: 9, c: '#5b7fd0' },
+  { k: 'México (CDMX, MTY, GDL)', v: 8, c: '#2a3550' }
+];
+
+let leads = [
+  { name: 'Michael Harrington', origin: 'La Jolla, CA', phone: '(858) 555-0193', email: 'm.harrington@outlook.com', type: 'Oceanfront Penthouse', amenity: 'Ocean-view balcony', goal: 'Full-time retirement', budget: 1650000, score: 97, status: 'hot', code: 'SHZ-MH7Q-K2PX' },
+  { name: 'Jennifer & Tom Walsh', origin: 'Newport Beach, CA', phone: '(949) 555-0117', email: 'jwalsh.home@gmail.com', type: '3 Bedroom Residence', amenity: 'Spa bathroom, dual shower', goal: 'Weekend getaway', budget: 980000, score: 94, status: 'hot', code: 'SHZ-JW4D-9RTA' },
+  { name: 'David Kessler', origin: 'Scottsdale, AZ', phone: '(480) 555-0166', email: 'dkessler@kesslercap.com', type: '2 Bedroom Ocean View', amenity: 'Ocean-view balcony', goal: 'Airbnb investment', budget: 720000, score: 91, status: 'hot', code: 'SHZ-DK8M-3WEN' },
+  { name: 'Sarah Lindqvist', origin: 'Carlsbad, CA', phone: '(760) 555-0128', email: 'sarah.lindqvist@icloud.com', type: '2 Bedroom Ocean View', amenity: 'Spa bathroom, dual shower', goal: 'Full-time retirement', budget: 660000, score: 88, status: 'warm', code: 'SHZ-SL2B-H7KC' },
+  { name: 'Robert "Bob" Delgado', origin: 'Chula Vista, CA', phone: '(619) 555-0174', email: 'bdelgado.re@yahoo.com', type: 'Oceanfront Penthouse', amenity: 'Private jacuzzi', goal: 'Airbnb investment', budget: 1480000, score: 86, status: 'hot', code: 'SHZ-RD5N-QX4M' },
+  { name: 'Karen Mitchell', origin: 'Irvine, CA', phone: '(714) 555-0102', email: 'karen.mitchell@me.com', type: '3 Bedroom Residence', amenity: '24/7 gated security', goal: 'Full-time retirement', budget: 910000, score: 83, status: 'warm', code: 'SHZ-KM9F-2LPV' },
+  { name: 'Brandon Ortiz', origin: 'Santa Monica, CA', phone: '(310) 555-0189', email: 'brandon@ortizventures.co', type: '1 Bedroom Signature Suite', amenity: 'Ocean-view balcony', goal: 'Airbnb investment', budget: 450000, score: 79, status: 'warm', code: 'SHZ-BO3T-7GYH' },
+  { name: 'Linda & Greg Thompson', origin: 'Escondido, CA', phone: '(760) 555-0145', email: 'thompsonsretire@gmail.com', type: '2 Bedroom Ocean View', amenity: 'Ocean-view balcony', goal: 'Full-time retirement', budget: 690000, score: 77, status: 'new', code: 'SHZ-LT6R-W8EQ' },
+  { name: 'Ashley Nguyen', origin: 'Huntington Beach, CA', phone: '(714) 555-0137', email: 'ashley.nguyen@proton.me', type: '3 Bedroom Residence', amenity: 'Spa bathroom, dual shower', goal: 'Weekend getaway', budget: 870000, score: 74, status: 'new', code: 'SHZ-AN2K-5ZMD' },
+  { name: 'Steven Park', origin: 'Las Vegas, NV', phone: '(702) 555-0151', email: 'spark.invest@gmail.com', type: '1 Bedroom Signature Suite', amenity: 'Private jacuzzi', goal: 'Airbnb investment', budget: 430000, score: 71, status: 'new', code: 'SHZ-SP8J-4CRT' }
+];
+
+function bumpAmenity(src) {
+  const a = amenityData.find(x => x.src === src);
+  if (a && a.v < 99) a.v += 1;
+  if (charts.amenity) { charts.amenity.data.datasets[0].data = amenityData.map(x => x.v); charts.amenity.update(); }
+}
+
+/* =========================================================
+   DASHBOARD RENDER
+   ========================================================= */
+const charts = {};
+const fmtUSD = n => n >= 1e6 ? '$' + (n / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'M' : '$' + Math.round(n / 1e3) + 'K';
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function countUp(el, to, dur = 1400, fmt = n => n.toLocaleString('en-US')) {
+  const start = performance.now();
+  const from = +String(el.textContent).replace(/[^\d]/g, '') || 0;
+  const tick = t => {
+    const p = Math.min(1, (t - start) / dur), e = 1 - Math.pow(1 - p, 4);
+    el.textContent = fmt(Math.round(from + (to - from) * e));
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function updateKpisLive() {
+  countUp(document.getElementById('kpiLeads'), 1284 + liveBump, 800);
+  countUp(document.getElementById('kpiReady'), 47 + liveBump, 800);
+}
+
+function initDashboard() {
+  if (typeof Chart === 'undefined') {
+    document.querySelectorAll('#view-owner canvas').forEach(c => {
+      const p = c.parentElement; if (p.style.height) p.innerHTML = '<div class="h-full grid place-items-center text-sm text-mist text-center px-6">Conéctate a internet para ver las gráficas interactivas.</div>';
+    });
+  } else {
+    buildCharts();
+  }
+  countUp(document.getElementById('kpiLeads'), 1284 + liveBump);
+  countUp(document.getElementById('kpiBudget'), 742);
+  countUp(document.getElementById('kpiReady'), 47 + liveBump);
+  renderCRM();
+  renderLegend();
+  typeInsight(insights[0]);
+}
+
+function buildCharts() {
+  Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+  Chart.defaults.color = '#8a93a6';
+  Chart.defaults.borderColor = 'rgba(255,255,255,.06)';
+  const tooltip = { backgroundColor: 'rgba(10,18,36,.96)', borderColor: 'rgba(201,164,92,.4)', borderWidth: 1, padding: 12, titleColor: '#e6cf98', bodyColor: '#eef0f4', cornerRadius: 10, displayColors: false };
+
+  // Amenities: horizontal bars
+  const ac = document.getElementById('amenityChart').getContext('2d');
+  const g = ac.createLinearGradient(0, 0, ac.canvas.clientWidth || 600, 0);
+  g.addColorStop(0, 'rgba(168,123,63,.9)'); g.addColorStop(1, 'rgba(230,207,152,1)');
+  charts.amenity = new Chart(ac, {
+    type: 'bar',
+    data: { labels: amenityData.map(a => a.k), datasets: [{ data: amenityData.map(a => a.v),
+      backgroundColor: ctx => ctx.dataIndex < 2 ? g : 'rgba(91,127,208,.55)', hoverBackgroundColor: '#e6cf98',
+      borderRadius: 8, borderSkipped: false, barThickness: 22 }] },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      animation: { duration: 1400, easing: 'easeOutQuart' },
+      scales: {
+        x: { max: 100, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { callback: v => v + '%', stepSize: 25 } },
+        y: { grid: { display: false }, ticks: { color: '#d7dbe3', font: { size: 12 } } }
+      },
+      plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: c => `${c.parsed.x}% de los compradores lo pide` } } }
+    },
+    plugins: [{ id: 'vals', afterDatasetsDraw(chart) {
+      const { ctx } = chart; ctx.save(); ctx.font = '600 12px Inter'; ctx.fillStyle = '#f4f1ea'; ctx.textBaseline = 'middle';
+      chart.getDatasetMeta(0).data.forEach((bar, i) => ctx.fillText(chart.data.datasets[0].data[i] + '%', bar.x + 8, bar.y));
+      ctx.restore();
+    } }]
+  });
+
+  // Origin doughnut
+  charts.origin = new Chart(document.getElementById('originChart'), {
+    type: 'doughnut',
+    data: { labels: originData.map(o => o.k), datasets: [{ data: originData.map(o => o.v), backgroundColor: originData.map(o => o.c), borderColor: '#0b1222', borderWidth: 3, hoverOffset: 10 }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '72%', animation: { animateRotate: true, duration: 1500 },
+      plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: c => `${c.label}: ${c.parsed}%` } } } }
+  });
+
+  // Trend line
+  const tc = document.getElementById('trendChart').getContext('2d');
+  const g1 = tc.createLinearGradient(0, 0, 0, 260); g1.addColorStop(0, 'rgba(201,164,92,.35)'); g1.addColorStop(1, 'rgba(201,164,92,0)');
+  const g2 = tc.createLinearGradient(0, 0, 0, 260); g2.addColorStop(0, 'rgba(91,127,208,.28)'); g2.addColorStop(1, 'rgba(91,127,208,0)');
+  const weeks = ['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6','Sem 7','Sem 8','Sem 9','Sem 10','Sem 11','Sem 12'];
+  charts.trend = new Chart(tc, {
+    type: 'line',
+    data: { labels: weeks, datasets: [
+      { label: 'EE. UU.', data: [42, 51, 58, 64, 71, 69, 83, 92, 97, 108, 121, 134], borderColor: '#c9a45c', backgroundColor: g1, fill: true, tension: .42, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 6, pointBackgroundColor: '#e6cf98' },
+      { label: 'México', data: [12, 14, 13, 18, 21, 19, 24, 27, 26, 31, 33, 38], borderColor: '#5b7fd0', backgroundColor: g2, fill: true, tension: .42, borderWidth: 2, pointRadius: 0, pointHoverRadius: 6, pointBackgroundColor: '#a5c8fb' }
+    ] },
+    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+      scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,.05)' }, beginAtZero: true } },
+      plugins: { legend: { display: false }, tooltip: { ...tooltip, displayColors: true } } }
+  });
+
+  // Sparklines
+  const spark = (id, data, color) => new Chart(document.getElementById(id), {
+    type: 'line', data: { labels: data.map((_, i) => i), datasets: [{ data, borderColor: color, borderWidth: 1.8, pointRadius: 0, tension: .4, fill: false }] },
+    options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1800 }, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } } }
+  });
+  charts.s1 = spark('spark1', [20, 24, 23, 29, 31, 30, 36, 41, 39, 46, 52, 58], '#c9a45c');
+  charts.s2 = spark('spark2', [690, 702, 698, 711, 705, 719, 726, 722, 731, 738, 735, 742], '#86efac');
+}
+
+function renderLegend() {
+  document.getElementById('originLegend').innerHTML = originData.map(o => `
+    <li class="flex items-center justify-between gap-3">
+      <span class="flex items-center gap-2 text-[#d7dbe3] text-[.82rem]"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${o.c}"></span>${o.k}</span>
+      <span class="font-medium text-[#f4f1ea] text-[.82rem]">${o.v}%</span>
+    </li>`).join('');
+}
+
+const avatarColors = ['linear-gradient(135deg,#e6cf98,#a87b3f)', 'linear-gradient(135deg,#a5c8fb,#3b5b9a)', 'linear-gradient(135deg,#f5d0c5,#c07a5f)', 'linear-gradient(135deg,#c7f0d8,#4c9a74)'];
+let crmFilter = 'all';
+const called = new Set();
+
+function renderCRM() {
+  const rows = leads.filter(l => crmFilter === 'all' ? true : crmFilter === 'hot' ? l.status === 'hot' : (l.type === crmFilter || l.goal === crmFilter));
+  const statusLabel = { hot: '🔥 Caliente', warm: 'Tibio', new: 'Nuevo' };
+  document.getElementById('crmBody').innerHTML = rows.map((l, i) => {
+    const initials = l.name.replace(/["“”]/g, '').split(/\s+/).filter(w => /^[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(w) && w !== '&').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    const isCalled = called.has(l.code);
+    return `<tr class="${l.fresh ? 'fresh' : ''}">
+      <td><div class="flex items-center gap-3">
+        <div class="avatar" style="background:${avatarColors[l.name.length % 4]}">${esc(initials)}</div>
+        <div><div class="font-medium text-[#f4f1ea] flex items-center gap-2">${esc(l.name)}${l.fresh ? '<span class="text-[.6rem] tracking-[.14em] uppercase bg-[#c9a45c] text-[#0b0d12] rounded px-1.5 py-0.5">Nuevo</span>' : ''}</div>
+        <div class="text-xs text-mist">${esc(l.email)}</div></div></div></td>
+      <td class="text-[#c9ced8]">${esc(l.origin)}</td>
+      <td class="text-[#f4f1ea]">${esc(ES[l.type] || l.type)}</td>
+      <td class="text-[#c9ced8]">${esc(ES[l.amenity] || l.amenity)}</td>
+      <td class="text-[#c9ced8]">${esc(ES[l.goal] || l.goal)}</td>
+      <td class="font-medium gold-text">${fmtUSD(l.budget)}</td>
+      <td><div class="flex items-center gap-2"><div class="score"><span style="width:${l.score}%"></span></div><span class="text-xs text-[#d7dbe3]">${l.score}</span></div></td>
+      <td><span class="status ${l.status}">${statusLabel[l.status]}</span></td>
+      <td class="font-mono text-xs text-gold2">${esc(l.code)}</td>
+      <td class="text-right"><button class="call-btn ${isCalled ? 'done' : ''}" data-code="${esc(l.code)}" data-name="${esc(l.name)}" data-phone="${esc(l.phone)}">
+        ${isCalled ? '✓ Agendada' : '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1z"/></svg>Llamar'}
+      </button></td>
+    </tr>`;
+  }).join('');
+  leads.forEach(l => l.fresh = false);
+  document.getElementById('crmCount').textContent = `Mostrando ${rows.length} de ${leads.length} leads VIP · ${leads.filter(l => l.status === 'hot').length} calientes`;
+}
+
+document.getElementById('crmBody').addEventListener('click', e => {
+  const b = e.target.closest('.call-btn'); if (!b || called.has(b.dataset.code)) return;
+  called.add(b.dataset.code);
+  showToast(`Llamada directa agendada con ${b.dataset.name} · ${b.dataset.phone}`);
+  renderCRM();
+});
+document.getElementById('crmFilters').addEventListener('click', e => {
+  const b = e.target.closest('.filter-chip'); if (!b) return;
+  document.querySelectorAll('#crmFilters .filter-chip').forEach(x => x.classList.toggle('active', x === b));
+  crmFilter = b.dataset.f; renderCRM();
+});
+document.querySelectorAll('[data-range]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('[data-range]').forEach(x => x.classList.toggle('active', x === b));
+  const f = { 7: .28, 30: 1, 90: 2.7 }[b.dataset.range];
+  countUp(document.getElementById('kpiLeads'), Math.round(1284 * f) + liveBump, 900);
+  countUp(document.getElementById('kpiReady'), Math.round(47 * f) + liveBump, 900);
+  document.getElementById('kpiPipeline').textContent = '$' + (34.9 * f).toFixed(1) + 'M';
+  if (charts.trend) {
+    charts.trend.data.datasets.forEach(ds => ds.data = ds.data.map(v => Math.max(4, Math.round(v * (0.85 + Math.random() * 0.3)))));
+    charts.trend.update();
+  }
+}));
+
+/* AI insight */
+const insights = [
+  '💡 <b class="text-gold2">Tendencia de la semana:</b> El 73% busca acabados de baño y vista al mar. <br/><br/><b class="text-gold2">Sugerencia para tus anuncios:</b> Enfoca la publicidad en fotos de los baños y las terrazas.',
+  '💡 <b class="text-gold2">Señal de inversión:</b> Los leads de Scottsdale y Las Vegas eligen “Inversión Airbnb” 2.4× más que el promedio. <br/><br/><b class="text-gold2">Sugerencia:</b> Lanza un anuncio con el rendimiento proyectado de 9–12% y el ocupación de verano.',
+  '💡 <b class="text-gold2">Momento de cierre:</b> Los leads de San Diego responden 3× mejor si se les llama en menos de 2 horas. <br/><br/><b class="text-gold2">Sugerencia:</b> Llama hoy a los 5 leads “Caliente” antes de las 6 pm hora del Pacífico.',
+  '💡 <b class="text-gold2">Penthouse en demanda:</b> El presupuesto promedio en Orange County subió a $1.1M. <br/><br/><b class="text-gold2">Sugerencia:</b> Muestra el rooftop privado al atardecer en Instagram y YouTube para Newport e Irvine.'
+];
+let insightIdx = 0, typingTimer;
+function typeInsight(html) {
+  const el = document.getElementById('insightText');
+  clearTimeout(typingTimer); el.classList.add('typing');
+  // type out plain text, then swap to rich html
+  const tmp = document.createElement('div'); tmp.innerHTML = html.replace(/<br\/?>/g, '\n');
+  const text = tmp.textContent; let i = 0;
+  const step = () => {
+    i += 2; el.textContent = text.slice(0, i); el.style.whiteSpace = 'pre-line';
+    if (i < text.length) typingTimer = setTimeout(step, 14);
+    else { el.style.whiteSpace = ''; el.innerHTML = html; el.classList.remove('typing'); }
+  };
+  step();
+}
+function regenInsight() { insightIdx = (insightIdx + 1) % insights.length; typeInsight(insights[insightIdx]); }
+
+function exportCSV() {
+  const head = ['Nombre', 'Origen', 'Telefono', 'Email', 'Interes', 'Amenidad', 'Objetivo', 'Presupuesto USD', 'Score', 'Estado', 'Codigo VIP'];
+  const rows = leads.map(l => [l.name, l.origin, l.phone, l.email, ES[l.type] || l.type, ES[l.amenity] || l.amenity, ES[l.goal] || l.goal, l.budget, l.score, l.status, l.code]);
+  const csv = [head, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'sea-houz-leads-vip.csv'; a.click();
+  showToast('CSV exportado · ' + leads.length + ' leads');
+}
+
+/* Toast + clock */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast'); document.getElementById('toastText').textContent = msg;
+  t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+function tickClock() {
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Tijuana' }) + ' PT';
+}
+setInterval(tickClock, 15000); tickClock();
+
+/* init */
+updateNav();
+requestAnimationFrame(positionPill);
+document.fonts && document.fonts.ready.then(positionPill);
+</script>
+</body>
+</html>
