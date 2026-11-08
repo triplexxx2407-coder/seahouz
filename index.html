@@ -67,7 +67,16 @@
   .seg { position: relative; display: inline-flex; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); }
   .seg button { position: relative; z-index: 1; padding: .55rem 1.1rem; border-radius: 999px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 500; color: #9aa3b5; transition: color .35s; white-space: nowrap; }
   .seg button.active { color: #0b0d12; }
-  @media (max-width: 640px) { .seg button { padding: .5rem .7rem; font-size: .66rem; letter-spacing: .04em; } .seg { padding: 3px; } }
+  @media (max-width: 640px) { .seg { display: flex; width: 100%; padding: 3px; } .seg button { flex: 1; padding: .55rem .5rem; font-size: .7rem; letter-spacing: .06em; } }
+  .lang { position: relative; display: inline-grid; grid-template-columns: 1fr 1fr; width: 82px; height: 36px; border-radius: 999px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); cursor: pointer; }
+  .lang span[data-l] { position: relative; z-index: 1; display: grid; place-items: center; font-size: .7rem; letter-spacing: .12em; font-weight: 600; color: #9aa3b5; transition: color .35s; }
+  .lang .lang-knob { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); border-radius: 999px; background: linear-gradient(100deg, #b98d4a, #e6cf98 50%, #c9a45c); box-shadow: 0 4px 16px rgba(201,164,92,.4); transition: transform .45s cubic-bezier(.7,0,.2,1); }
+  .lang[data-lang="es"] .lang-knob { transform: translateX(100%); }
+  .lang[data-lang="en"] span[data-l="en"], .lang[data-lang="es"] span[data-l="es"] { color: #0b0d12; }
+  .lang:hover { border-color: rgba(201,164,92,.5); }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  .view.active .rv { animation: rise .8s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 110ms); }
+  .rowin { animation: rise .6s cubic-bezier(.2,.7,.2,1) both; }
   html, body { overflow-x: clip; }
   .seg .pill { position: absolute; top: 4px; bottom: 4px; left: 4px; border-radius: 999px; background: linear-gradient(100deg, #b98d4a, #e6cf98 50%, #c9a45c); box-shadow: 0 6px 24px rgba(201,164,92,.35); transition: transform .5s cubic-bezier(.7,0,.2,1), width .5s cubic-bezier(.7,0,.2,1); }
 
@@ -194,8 +203,8 @@
 
 <!-- ================= TOP BAR ================= -->
 <header class="sticky top-0 z-50 border-b hairline" style="background: rgba(7,9,15,.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
-  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-[72px] flex items-center justify-between gap-2 sm:gap-4">
-    <a href="#" class="flex items-center gap-3 shrink-0" onclick="switchView('buyer');return false;">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-0 sm:h-[72px] flex flex-wrap sm:flex-nowrap items-center justify-between gap-x-2 gap-y-2.5 sm:gap-4">
+    <a href="#" class="flex items-center gap-3 shrink-0 order-1" onclick="switchView('buyer');return false;">
       <svg class="hidden sm:block" width="34" height="34" viewBox="0 0 40 40" fill="none" aria-hidden="true">
         <defs><linearGradient id="lg" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#e6cf98"/><stop offset=".55" stop-color="#c9a45c"/><stop offset="1" stop-color="#a87b3f"/></linearGradient></defs>
         <rect x="1" y="1" width="38" height="38" rx="10" stroke="url(#lg)" stroke-width="1.2"/>
@@ -204,12 +213,12 @@
         <path d="M13 19V12l7-4 7 4v7" stroke="url(#lg)" stroke-width="1.6" stroke-linejoin="round"/>
       </svg>
       <div class="leading-none">
-        <div class="font-serif text-[1.15rem] sm:text-[1.45rem] tracking-[.1em] sm:tracking-[.12em] gold-text font-semibold">SEA HOUZ</div>
+        <div class="font-serif text-[1.3rem] sm:text-[1.45rem] tracking-[.1em] sm:tracking-[.12em] gold-text font-semibold">SEA HOUZ</div>
         <div class="text-[.58rem] tracking-[.32em] text-mist uppercase mt-1 hidden sm:block">Baja Ocean Residences</div>
       </div>
     </a>
 
-    <div class="seg" id="seg">
+    <div class="seg order-3 sm:order-2" id="seg">
       <span class="pill" id="segPill"></span>
       <button data-view="buyer" class="active" onclick="switchView('buyer')">
         <span class="hidden sm:inline">El Comprador · </span>Smart Offer
@@ -219,8 +228,13 @@
       </button>
     </div>
 
-    <div class="hidden lg:flex items-center gap-2 text-[.7rem] tracking-[.18em] uppercase text-mist shrink-0">
-      <span class="live-dot"></span> Direct-to-Developer
+    <div class="order-2 sm:order-3 flex items-center gap-5 shrink-0">
+      <div class="hidden lg:flex items-center gap-2 text-[.7rem] tracking-[.18em] uppercase text-mist">
+        <span class="live-dot"></span> Direct-to-Developer
+      </div>
+      <button id="langBtn" class="lang" data-lang="en" role="switch" aria-checked="false" aria-label="Language / Idioma" onclick="toggleLang()">
+        <span class="lang-knob"></span><span data-l="en">EN</span><span data-l="es">ES</span>
+      </button>
     </div>
   </div>
 </header>
@@ -231,7 +245,7 @@
     <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
 
       <!-- Hero copy -->
-      <div class="lg:col-span-5 lg:sticky lg:top-28">
+      <div id="buyerHero" class="lg:col-span-5 lg:sticky lg:top-28">
         <div class="inline-flex items-center gap-2 rounded-full glass-gold px-3 py-1.5 text-[.66rem] tracking-[.22em] uppercase text-gold2">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.7L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
           Direct Developer Access
@@ -498,7 +512,7 @@
 </main>
 
 <!-- ================= VIEW 2: OWNER DASHBOARD ================= -->
-<main id="view-owner" class="view" lang="es">
+<main id="view-owner" class="view">
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
 
     <!-- Header -->
@@ -629,7 +643,7 @@
           <button class="filter-chip active" data-f="all">Todos</button>
           <button class="filter-chip" data-f="hot">🔥 Calientes</button>
           <button class="filter-chip" data-f="Oceanfront Penthouse">Penthouse</button>
-          <button class="filter-chip" data-f="Airbnb investment">Inversión Airbnb</button>
+          <button class="filter-chip" data-f="Airbnb investment">Inversión en Airbnb</button>
         </div>
       </div>
       <div class="scroll-x">
@@ -662,23 +676,27 @@
 /* =========================================================
    STATE
    ========================================================= */
+let LANG = 'en';
+const L = (en, es) => LANG === 'es' ? es : en;
 const state = { step: 1, answers: { type: null, amenity: null, goal: null }, budget: null };
 const TOTAL = 4;
 const stepNames = ['Residence', 'Must-have', 'Goal', 'Access'];
+const stepNamesEs = ['Residencia', 'Indispensable', 'Objetivo', 'Acceso'];
 
 const ES = {
   'Oceanfront Penthouse': 'Penthouse frente al mar',
-  '3 Bedroom Residence': 'Residencia 3 recámaras',
-  '2 Bedroom Ocean View': '2 recámaras vista al mar',
-  '1 Bedroom Signature Suite': 'Suite 1 recámara',
-  'Ocean-view balcony': 'Balcón vista al mar',
-  'Spa bathroom, dual shower': 'Baño spa doble regadera',
+  '3 Bedroom Residence': 'Residencia de 3 recámaras',
+  '2 Bedroom Ocean View': '2 recámaras con vista al mar',
+  '1 Bedroom Signature Suite': 'Suite Signature de 1 recámara',
+  'Ocean-view balcony': 'Balcón con vista al mar',
+  'Spa bathroom, dual shower': 'Baño spa con doble regadera',
   'Private jacuzzi': 'Jacuzzi privado',
-  '24/7 gated security': 'Seguridad 24/7',
-  'Full-time retirement': 'Retiro completo',
-  'Weekend getaway': 'Fin de semana',
-  'Airbnb investment': 'Inversión Airbnb'
+  '24/7 gated security': 'Seguridad privada 24/7',
+  'Full-time retirement': 'Retiro de tiempo completo',
+  'Weekend getaway': 'Escapada de fin de semana',
+  'Airbnb investment': 'Inversión en Airbnb'
 };
+const tr = x => (LANG === 'es' && ES[x]) || x;
 
 /* =========================================================
    VIEW SWITCHING
@@ -689,18 +707,13 @@ function positionPill() {
   pill.style.width = active.offsetWidth + 'px';
   pill.style.transform = `translateX(${active.offsetLeft - 4}px)`;
 }
-let chartsReady = false;
 function switchView(v) {
   document.querySelectorAll('#seg button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
   document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
   document.getElementById('view-' + v).classList.add('active');
-  document.documentElement.lang = v === 'owner' ? 'es' : 'en';
   positionPill();
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (v === 'owner') {
-    if (!chartsReady) { initDashboard(); chartsReady = true; }
-    else { Object.values(charts).forEach(c => c.resize()); }
-  }
+  if (v === 'owner') loadOwner();
 }
 window.addEventListener('resize', positionPill);
 
@@ -728,11 +741,11 @@ function updateNav() {
   const next = document.getElementById('nextBtn');
   const key = ['type', 'amenity', 'goal'][s - 1];
   next.disabled = s <= 3 ? !state.answers[key] : false;
-  next.textContent = s === 4 ? 'Generate my VIP code' : 'Continue';
+  next.textContent = s === 4 ? L('Generate my VIP code', 'Generar mi código VIP') : L('Continue', 'Continuar');
   document.getElementById('quizNav').style.display = s === 5 ? 'none' : '';
   document.getElementById('progressWrap').style.display = s === 5 ? 'none' : '';
-  document.getElementById('stepLabel').textContent = `Step ${Math.min(s, 4)} of ${TOTAL}`;
-  document.getElementById('stepName').textContent = stepNames[Math.min(s, 4) - 1];
+  document.getElementById('stepLabel').textContent = L(`Step ${Math.min(s, 4)} of ${TOTAL}`, `Paso ${Math.min(s, 4)} de ${TOTAL}`);
+  document.getElementById('stepName').textContent = (LANG === 'es' ? stepNamesEs : stepNames)[Math.min(s, 4) - 1];
   document.querySelectorAll('.pbar').forEach((b, i) => b.style.width = (i < s ? '100%' : '0'));
 }
 
@@ -745,7 +758,7 @@ function showStep(n, back = false) {
   updateNav();
   if (n === 4) setTimeout(() => document.getElementById('fName').focus({ preventScroll: true }), 350);
   const card = document.getElementById('quizCard');
-  if (card.getBoundingClientRect().top < 70) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (card.getBoundingClientRect().top < 120) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function nextStep() {
@@ -812,6 +825,7 @@ function submitLead() {
   document.getElementById('sumGoal').textContent = state.answers.goal;
 
   showStep(5);
+  translateDom();
   scrambleCode(code);
 
   // push into owner CRM, "real time"
@@ -822,8 +836,8 @@ function submitLead() {
   leads.unshift(lead);
   liveBump = (liveBump || 0) + 1;
   bumpAmenity(state.answers.amenity);
-  if (chartsReady) { renderCRM(); updateKpisLive(); }
-  showToast(`Nuevo lead VIP: ${name} · ${ES[lead.type] || lead.type}`);
+  renderCRM(); updateKpisLive();
+  showToast(L(`New VIP lead: ${name} · ${lead.type}`, `Nuevo lead VIP: ${name} · ${tr(lead.type)}`));
 }
 
 function guessOrigin(phone) {
@@ -853,7 +867,7 @@ function scrambleCode(code) {
 
 function copyCode() {
   const btn = document.getElementById('copyBtn');
-  const done = () => { btn.textContent = 'Copied ✓'; setTimeout(() => btn.textContent = 'Copy VIP code', 1800); };
+  const done = () => { btn.textContent = L('Copied ✓', 'Copiado ✓'); setTimeout(() => btn.textContent = L('Copy VIP code', 'Copiar código VIP'), 1800); };
   if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(lastCode).then(done, done);
   else {
     const t = document.createElement('textarea'); t.value = lastCode; document.body.appendChild(t); t.select();
@@ -887,21 +901,26 @@ function resetQuiz() {
    ========================================================= */
 let liveBump = 0;
 const amenityData = [
-  { k: 'Balcón vista al mar', v: 84, src: 'Ocean-view balcony' },
-  { k: 'Baño spa doble regadera', v: 73, src: 'Spa bathroom, dual shower' },
-  { k: 'Seguridad 24/7', v: 61, src: '24/7 gated security' },
-  { k: 'Jacuzzi privado', v: 48, src: 'Private jacuzzi' },
-  { k: 'Rooftop / alberca infinita', v: 42 },
-  { k: 'Estacionamiento x2', v: 29 }
+  { k: 'Balcón vista al mar', en: 'Ocean-view balcony', v: 84, src: 'Ocean-view balcony' },
+  { k: 'Baño spa doble regadera', en: 'Spa bathroom, dual shower', v: 73, src: 'Spa bathroom, dual shower' },
+  { k: 'Seguridad 24/7', en: '24/7 security', v: 61, src: '24/7 gated security' },
+  { k: 'Jacuzzi privado', en: 'Private jacuzzi', v: 48, src: 'Private jacuzzi' },
+  { k: 'Rooftop / alberca infinita', en: 'Rooftop / infinity pool', v: 42 },
+  { k: 'Estacionamiento x2', en: '2-car parking', v: 29 }
 ];
+const AMENITY_BASE = amenityData.map(a => a.v);
+const nm = o => LANG === 'es' ? o.k : o.en;
 const originData = [
-  { k: 'San Diego', v: 38, c: '#c9a45c' },
-  { k: 'Orange County', v: 24, c: '#8a6a35' },
-  { k: 'Los Ángeles', v: 17, c: '#3b5b9a' },
-  { k: 'Resto de California', v: 4, c: '#2b4577' },
-  { k: 'Arizona / Nevada', v: 9, c: '#5b7fd0' },
-  { k: 'México (CDMX, MTY, GDL)', v: 8, c: '#2a3550' }
+  { k: 'San Diego', en: 'San Diego', v: 38, c: '#c9a45c' },
+  { k: 'Orange County', en: 'Orange County', v: 24, c: '#8a6a35' },
+  { k: 'Los Ángeles', en: 'Los Angeles', v: 17, c: '#3b5b9a' },
+  { k: 'Resto de California', en: 'Rest of California', v: 4, c: '#2b4577' },
+  { k: 'Arizona / Nevada', en: 'Arizona / Nevada', v: 9, c: '#5b7fd0' },
+  { k: 'México (CDMX, MTY, GDL)', en: 'Mexico (CDMX, MTY, GDL)', v: 8, c: '#2a3550' }
 ];
+const TREND_US = [42, 51, 58, 64, 71, 69, 83, 92, 97, 108, 121, 134];
+const TREND_MX = [12, 14, 13, 18, 21, 19, 24, 27, 26, 31, 33, 38];
+const weekLabels = () => Array.from({ length: 12 }, (_, i) => L('Wk ', 'Sem ') + (i + 1));
 
 let leads = [
   { name: 'Michael Harrington', origin: 'La Jolla, CA', phone: '(858) 555-0193', email: 'm.harrington@outlook.com', type: 'Oceanfront Penthouse', amenity: 'Ocean-view balcony', goal: 'Full-time retirement', budget: 1650000, score: 97, status: 'hot', code: 'SHZ-MH7Q-K2PX' },
@@ -932,7 +951,9 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;'
 function countUp(el, to, dur = 1400, fmt = n => n.toLocaleString('en-US')) {
   const start = performance.now();
   const from = +String(el.textContent).replace(/[^\d]/g, '') || 0;
+  const id = el._cu = (el._cu || 0) + 1;
   const tick = t => {
+    if (el._cu !== id) return;
     const p = Math.min(1, (t - start) / dur), e = 1 - Math.pow(1 - p, 4);
     el.textContent = fmt(Math.round(from + (to - from) * e));
     if (p < 1) requestAnimationFrame(tick);
@@ -945,7 +966,15 @@ function updateKpisLive() {
   countUp(document.getElementById('kpiReady'), 47 + liveBump, 800);
 }
 
-function initDashboard() {
+let animateRows = false;
+function loadOwner() {
+  // reset everything so the dashboard "loads" fresh on every visit
+  ['kpiLeads', 'kpiBudget', 'kpiReady'].forEach(id => { const e = document.getElementById(id); e._cu = (e._cu || 0) + 1; e.textContent = '0'; });
+  document.querySelectorAll('[data-range]').forEach(x => x.classList.toggle('active', x.dataset.range === '30'));
+  document.getElementById('kpiPipeline').textContent = '$34.9M';
+  document.querySelectorAll('#crmFilters .filter-chip').forEach(x => x.classList.toggle('active', x.dataset.f === 'all'));
+  crmFilter = 'all';
+  Object.keys(charts).forEach(k => { charts[k].destroy(); delete charts[k]; });
   if (typeof Chart === 'undefined') {
     document.querySelectorAll('#view-owner canvas').forEach(c => {
       const p = c.parentElement; if (p.style.height) p.innerHTML = '<div class="h-full grid place-items-center text-sm text-mist text-center px-6">Conéctate a internet para ver las gráficas interactivas.</div>';
@@ -956,9 +985,9 @@ function initDashboard() {
   countUp(document.getElementById('kpiLeads'), 1284 + liveBump);
   countUp(document.getElementById('kpiBudget'), 742);
   countUp(document.getElementById('kpiReady'), 47 + liveBump);
-  renderCRM();
+  animateRows = true; renderCRM(); setTimeout(() => animateRows = false, 1800);
   renderLegend();
-  typeInsight(insights[0]);
+  insightIdx = 0; typeInsight(INS[LANG][0]);
 }
 
 function buildCharts() {
@@ -973,7 +1002,7 @@ function buildCharts() {
   g.addColorStop(0, 'rgba(168,123,63,.9)'); g.addColorStop(1, 'rgba(230,207,152,1)');
   charts.amenity = new Chart(ac, {
     type: 'bar',
-    data: { labels: amenityData.map(a => a.k), datasets: [{ data: amenityData.map(a => a.v),
+    data: { labels: amenityData.map(nm), datasets: [{ data: amenityData.map(a => a.v),
       backgroundColor: ctx => ctx.dataIndex < 2 ? g : 'rgba(91,127,208,.55)', hoverBackgroundColor: '#e6cf98',
       borderRadius: 8, borderSkipped: false, barThickness: 22 }] },
     options: {
@@ -983,7 +1012,7 @@ function buildCharts() {
         x: { max: 100, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { callback: v => v + '%', stepSize: 25 } },
         y: { grid: { display: false }, ticks: { color: '#d7dbe3', font: { size: 12 } } }
       },
-      plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: c => `${c.parsed.x}% de los compradores lo pide` } } }
+      plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: c => L(`${c.parsed.x}% of buyers ask for it`, `${c.parsed.x}% de los compradores lo pide`) } } }
     },
     plugins: [{ id: 'vals', afterDatasetsDraw(chart) {
       const { ctx } = chart; ctx.save(); ctx.font = '600 12px Inter'; ctx.fillStyle = '#f4f1ea'; ctx.textBaseline = 'middle';
@@ -995,7 +1024,7 @@ function buildCharts() {
   // Origin doughnut
   charts.origin = new Chart(document.getElementById('originChart'), {
     type: 'doughnut',
-    data: { labels: originData.map(o => o.k), datasets: [{ data: originData.map(o => o.v), backgroundColor: originData.map(o => o.c), borderColor: '#0b1222', borderWidth: 3, hoverOffset: 10 }] },
+    data: { labels: originData.map(nm), datasets: [{ data: originData.map(o => o.v), backgroundColor: originData.map(o => o.c), borderColor: '#0b1222', borderWidth: 3, hoverOffset: 10 }] },
     options: { responsive: true, maintainAspectRatio: false, cutout: '72%', animation: { animateRotate: true, duration: 1500 },
       plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: { label: c => `${c.label}: ${c.parsed}%` } } } }
   });
@@ -1004,12 +1033,11 @@ function buildCharts() {
   const tc = document.getElementById('trendChart').getContext('2d');
   const g1 = tc.createLinearGradient(0, 0, 0, 260); g1.addColorStop(0, 'rgba(201,164,92,.35)'); g1.addColorStop(1, 'rgba(201,164,92,0)');
   const g2 = tc.createLinearGradient(0, 0, 0, 260); g2.addColorStop(0, 'rgba(91,127,208,.28)'); g2.addColorStop(1, 'rgba(91,127,208,0)');
-  const weeks = ['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6','Sem 7','Sem 8','Sem 9','Sem 10','Sem 11','Sem 12'];
   charts.trend = new Chart(tc, {
     type: 'line',
-    data: { labels: weeks, datasets: [
-      { label: 'EE. UU.', data: [42, 51, 58, 64, 71, 69, 83, 92, 97, 108, 121, 134], borderColor: '#c9a45c', backgroundColor: g1, fill: true, tension: .42, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 6, pointBackgroundColor: '#e6cf98' },
-      { label: 'México', data: [12, 14, 13, 18, 21, 19, 24, 27, 26, 31, 33, 38], borderColor: '#5b7fd0', backgroundColor: g2, fill: true, tension: .42, borderWidth: 2, pointRadius: 0, pointHoverRadius: 6, pointBackgroundColor: '#a5c8fb' }
+    data: { labels: weekLabels(), datasets: [
+      { label: L('USA', 'EE. UU.'), data: TREND_US.slice(), borderColor: '#c9a45c', backgroundColor: g1, fill: true, tension: .42, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 6, pointBackgroundColor: '#e6cf98' },
+      { label: L('Mexico', 'México'), data: TREND_MX.slice(), borderColor: '#5b7fd0', backgroundColor: g2, fill: true, tension: .42, borderWidth: 2, pointRadius: 0, pointHoverRadius: 6, pointBackgroundColor: '#a5c8fb' }
     ] },
     options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
       scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,.05)' }, beginAtZero: true } },
@@ -1028,7 +1056,7 @@ function buildCharts() {
 function renderLegend() {
   document.getElementById('originLegend').innerHTML = originData.map(o => `
     <li class="flex items-center justify-between gap-3">
-      <span class="flex items-center gap-2 text-[#d7dbe3] text-[.82rem]"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${o.c}"></span>${o.k}</span>
+      <span class="flex items-center gap-2 text-[#d7dbe3] text-[.82rem]"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${o.c}"></span>${nm(o)}</span>
       <span class="font-medium text-[#f4f1ea] text-[.82rem]">${o.v}%</span>
     </li>`).join('');
 }
@@ -1039,36 +1067,36 @@ const called = new Set();
 
 function renderCRM() {
   const rows = leads.filter(l => crmFilter === 'all' ? true : crmFilter === 'hot' ? l.status === 'hot' : (l.type === crmFilter || l.goal === crmFilter));
-  const statusLabel = { hot: '🔥 Caliente', warm: 'Tibio', new: 'Nuevo' };
+  const statusLabel = { hot: L('🔥 Hot', '🔥 Caliente'), warm: L('Warm', 'Tibio'), new: L('New', 'Nuevo') };
   document.getElementById('crmBody').innerHTML = rows.map((l, i) => {
     const initials = l.name.replace(/["“”]/g, '').split(/\s+/).filter(w => /^[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(w) && w !== '&').map(w => w[0]).slice(0, 2).join('').toUpperCase();
     const isCalled = called.has(l.code);
-    return `<tr class="${l.fresh ? 'fresh' : ''}">
+    return `<tr class="${l.fresh ? 'fresh' : ''} ${animateRows ? 'rowin' : ''}" ${animateRows ? `style="animation-delay:${i * 70 + 250}ms"` : ''}>
       <td><div class="flex items-center gap-3">
         <div class="avatar" style="background:${avatarColors[l.name.length % 4]}">${esc(initials)}</div>
-        <div><div class="font-medium text-[#f4f1ea] flex items-center gap-2">${esc(l.name)}${l.fresh ? '<span class="text-[.6rem] tracking-[.14em] uppercase bg-[#c9a45c] text-[#0b0d12] rounded px-1.5 py-0.5">Nuevo</span>' : ''}</div>
+        <div><div class="font-medium text-[#f4f1ea] flex items-center gap-2">${esc(l.name)}${l.fresh ? '<span class="text-[.6rem] tracking-[.14em] uppercase bg-[#c9a45c] text-[#0b0d12] rounded px-1.5 py-0.5">' + L('New', 'Nuevo') + '</span>' : ''}</div>
         <div class="text-xs text-mist">${esc(l.email)}</div></div></div></td>
       <td class="text-[#c9ced8]">${esc(l.origin)}</td>
-      <td class="text-[#f4f1ea]">${esc(ES[l.type] || l.type)}</td>
-      <td class="text-[#c9ced8]">${esc(ES[l.amenity] || l.amenity)}</td>
-      <td class="text-[#c9ced8]">${esc(ES[l.goal] || l.goal)}</td>
+      <td class="text-[#f4f1ea]">${esc(tr(l.type))}</td>
+      <td class="text-[#c9ced8]">${esc(tr(l.amenity))}</td>
+      <td class="text-[#c9ced8]">${esc(tr(l.goal))}</td>
       <td class="font-medium gold-text">${fmtUSD(l.budget)}</td>
       <td><div class="flex items-center gap-2"><div class="score"><span style="width:${l.score}%"></span></div><span class="text-xs text-[#d7dbe3]">${l.score}</span></div></td>
       <td><span class="status ${l.status}">${statusLabel[l.status]}</span></td>
       <td class="font-mono text-xs text-gold2">${esc(l.code)}</td>
       <td class="text-right"><button class="call-btn ${isCalled ? 'done' : ''}" data-code="${esc(l.code)}" data-name="${esc(l.name)}" data-phone="${esc(l.phone)}">
-        ${isCalled ? '✓ Agendada' : '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1z"/></svg>Llamar'}
+        ${isCalled ? L('✓ Booked', '✓ Agendada') : '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1z"/></svg>' + L('Call', 'Llamar')}
       </button></td>
     </tr>`;
   }).join('');
   leads.forEach(l => l.fresh = false);
-  document.getElementById('crmCount').textContent = `Mostrando ${rows.length} de ${leads.length} leads VIP · ${leads.filter(l => l.status === 'hot').length} calientes`;
+  document.getElementById('crmCount').textContent = L(`Showing ${rows.length} of ${leads.length} VIP leads · ${leads.filter(l => l.status === 'hot').length} hot`, `Mostrando ${rows.length} de ${leads.length} leads VIP · ${leads.filter(l => l.status === 'hot').length} calientes`);
 }
 
 document.getElementById('crmBody').addEventListener('click', e => {
   const b = e.target.closest('.call-btn'); if (!b || called.has(b.dataset.code)) return;
   called.add(b.dataset.code);
-  showToast(`Llamada directa agendada con ${b.dataset.name} · ${b.dataset.phone}`);
+  showToast(L(`Direct call booked with ${b.dataset.name} · ${b.dataset.phone}`, `Llamada directa agendada con ${b.dataset.name} · ${b.dataset.phone}`));
   renderCRM();
 });
 document.getElementById('crmFilters').addEventListener('click', e => {
@@ -1089,12 +1117,20 @@ document.querySelectorAll('[data-range]').forEach(b => b.addEventListener('click
 }));
 
 /* AI insight */
-const insights = [
-  '💡 <b class="text-gold2">Tendencia de la semana:</b> El 73% busca acabados de baño y vista al mar. <br/><br/><b class="text-gold2">Sugerencia para tus anuncios:</b> Enfoca la publicidad en fotos de los baños y las terrazas.',
-  '💡 <b class="text-gold2">Señal de inversión:</b> Los leads de Scottsdale y Las Vegas eligen “Inversión Airbnb” 2.4× más que el promedio. <br/><br/><b class="text-gold2">Sugerencia:</b> Lanza un anuncio con el rendimiento proyectado de 9–12% y el ocupación de verano.',
-  '💡 <b class="text-gold2">Momento de cierre:</b> Los leads de San Diego responden 3× mejor si se les llama en menos de 2 horas. <br/><br/><b class="text-gold2">Sugerencia:</b> Llama hoy a los 5 leads “Caliente” antes de las 6 pm hora del Pacífico.',
-  '💡 <b class="text-gold2">Penthouse en demanda:</b> El presupuesto promedio en Orange County subió a $1.1M. <br/><br/><b class="text-gold2">Sugerencia:</b> Muestra el rooftop privado al atardecer en Instagram y YouTube para Newport e Irvine.'
-];
+const INS = {
+  es: [
+    '💡 <b class="text-gold2">Tendencia de la semana:</b> El 73% busca acabados de baño y vista al mar. <br/><br/><b class="text-gold2">Sugerencia para tus anuncios:</b> Enfoca la publicidad en fotos de los baños y las terrazas.',
+    '💡 <b class="text-gold2">Señal de inversión:</b> Los leads de Scottsdale y Las Vegas eligen “Inversión en Airbnb” 2.4× más que el promedio. <br/><br/><b class="text-gold2">Sugerencia:</b> Lanza un anuncio con el rendimiento proyectado de 9–12% y la ocupación de verano.',
+    '💡 <b class="text-gold2">Momento de cierre:</b> Los leads de San Diego responden 3× mejor si se les llama en menos de 2 horas. <br/><br/><b class="text-gold2">Sugerencia:</b> Llama hoy a los 5 leads “Caliente” antes de las 6 pm hora del Pacífico.',
+    '💡 <b class="text-gold2">Penthouse en demanda:</b> El presupuesto promedio en Orange County subió a $1.1M. <br/><br/><b class="text-gold2">Sugerencia:</b> Muestra el rooftop privado al atardecer en Instagram y YouTube para Newport e Irvine.'
+  ],
+  en: [
+    '💡 <b class="text-gold2">Trend of the week:</b> 73% want upscale bathroom finishes and an ocean view. <br/><br/><b class="text-gold2">Suggestion for your ads:</b> Focus your advertising on photos of the bathrooms and terraces.',
+    '💡 <b class="text-gold2">Investment signal:</b> Leads from Scottsdale and Las Vegas pick “Airbnb investment” 2.4× more than average. <br/><br/><b class="text-gold2">Suggestion:</b> Launch an ad with the projected 9–12% yield and summer occupancy.',
+    '💡 <b class="text-gold2">Closing window:</b> San Diego leads respond 3× better when called within 2 hours. <br/><br/><b class="text-gold2">Suggestion:</b> Call today\'s 5 “Hot” leads before 6 pm Pacific time.',
+    '💡 <b class="text-gold2">Penthouse demand:</b> The average budget in Orange County rose to $1.1M. <br/><br/><b class="text-gold2">Suggestion:</b> Show the private rooftop at sunset on Instagram and YouTube for Newport and Irvine.'
+  ]
+};
 let insightIdx = 0, typingTimer;
 function typeInsight(html) {
   const el = document.getElementById('insightText');
@@ -1109,16 +1145,16 @@ function typeInsight(html) {
   };
   step();
 }
-function regenInsight() { insightIdx = (insightIdx + 1) % insights.length; typeInsight(insights[insightIdx]); }
+function regenInsight() { insightIdx = (insightIdx + 1) % INS[LANG].length; typeInsight(INS[LANG][insightIdx]); }
 
 function exportCSV() {
-  const head = ['Nombre', 'Origen', 'Telefono', 'Email', 'Interes', 'Amenidad', 'Objetivo', 'Presupuesto USD', 'Score', 'Estado', 'Codigo VIP'];
-  const rows = leads.map(l => [l.name, l.origin, l.phone, l.email, ES[l.type] || l.type, ES[l.amenity] || l.amenity, ES[l.goal] || l.goal, l.budget, l.score, l.status, l.code]);
+  const head = L(['Name', 'Origin', 'Phone', 'Email', 'Interest', 'Amenity', 'Goal', 'Budget USD', 'Score', 'Status', 'VIP code'], ['Nombre', 'Origen', 'Telefono', 'Email', 'Interes', 'Amenidad', 'Objetivo', 'Presupuesto USD', 'Score', 'Estado', 'Codigo VIP']);
+  const rows = leads.map(l => [l.name, l.origin, l.phone, l.email, tr(l.type), tr(l.amenity), tr(l.goal), l.budget, l.score, l.status, l.code]);
   const csv = [head, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
   a.download = 'sea-houz-leads-vip.csv'; a.click();
-  showToast('CSV exportado · ' + leads.length + ' leads');
+  showToast(L('CSV exported · ', 'CSV exportado · ') + leads.length + ' leads');
 }
 
 /* Toast + clock */
@@ -1128,14 +1164,132 @@ function showToast(msg) {
   t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
 }
 function tickClock() {
-  document.getElementById('clock').textContent = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Tijuana' }) + ' PT';
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString(LANG === 'es' ? 'es-MX' : 'en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Tijuana' }) + ' PT';
 }
 setInterval(tickClock, 15000); tickClock();
+
+/* =========================================================
+   I18N: EN <-> ES (whole page)
+   ========================================================= */
+const PAIRS = [
+  ['The Buyer ·', 'El Comprador ·'], ['The Owner ·', 'El Propietario ·'],
+  ['Smart Offer', 'Oferta Inteligente'], ['Smart Offer ·', 'Oferta Inteligente ·'], ['Dashboard', 'Panel'],
+  ['Direct-to-Developer', 'Directo con el Desarrollador'], ['Direct Developer Access', 'Acceso Directo al Desarrollador'],
+  ['Residences', 'Residencias'],
+  ['Oceanfront living on the Tijuana–Rosarito corridor, 25 minutes from San Diego. Deal directly with the developer. No brokers, no middlemen, no inflated fees.', 'Vida frente al mar en el corredor Tijuana–Rosarito, a 25 minutos de San Diego. Trata directo con el desarrollador. Sin corredores, sin intermediarios, sin comisiones infladas.'],
+  ['Broker markup', 'Sobreprecio de corredor'], ['To San Diego', 'A San Diego'], ['Owner callback', 'Llamada del dueño'],
+  ['Private pricing released only to verified VIP buyers', 'Precios privados solo para compradores VIP verificados'],
+  ["Funds go straight to the developer's escrow, never through an agency", 'Los fondos van directo al fideicomiso del desarrollador, nunca por una agencia'],
+  ['Bilingual closing team, US-friendly fideicomiso guidance', 'Equipo de cierre bilingüe y asesoría de fideicomiso para compradores de EE. UU.'],
+  ['Residence', 'Residencia'],
+  ['Which residence fits your next chapter?', '¿Qué residencia encaja con tu próximo capítulo?'],
+  ['Choose one. Pricing below reflects current developer-direct availability.', 'Elige una. Los precios reflejan la disponibilidad actual directo del desarrollador.'],
+  ['3 BR · 3,200 sq ft · private rooftop', '3 rec. · 297 m² · rooftop privado'], ['From $1.45M USD', 'Desde $1.45M USD'],
+  ['2,150 sq ft · wraparound terrace', '200 m² · terraza envolvente'], ['From $890K USD', 'Desde $890K USD'],
+  ['1,480 sq ft · floor-to-ceiling glass', '138 m² · ventanales de piso a techo'], ['From $640K USD', 'Desde $640K USD'],
+  ['980 sq ft · turnkey furnished', '91 m² · amueblada, lista para habitar'], ['From $420K USD', 'Desde $420K USD'],
+  ["What's the one amenity you won't live without?", '¿Qué amenidad es indispensable para ti?'],
+  ["We'll prioritize units that deliver it, no compromises.", 'Priorizaremos las unidades que la ofrecen, sin concesiones.'],
+  ['Unobstructed Pacific sunsets from home', 'Atardeceres del Pacífico sin obstrucciones, desde casa'],
+  ['Marble finishes, rainfall heads for two', 'Acabados de mármol y regaderas tipo lluvia para dos'],
+  ['Heated terrace hot tub, yours alone', 'Jacuzzi con calefacción en tu terraza, solo para ti'],
+  ['Concierge, CCTV and controlled access', 'Conserjería, CCTV y acceso controlado'],
+  ["What's the plan for your Baja home?", '¿Cuál es el plan para tu casa en Baja?'],
+  ['This tailors the financials the owner prepares for you.', 'Esto personaliza los números que el dueño te prepara.'],
+  ['Year-round living, residency and healthcare guidance included', 'Vida todo el año, con asesoría de residencia y servicios de salud'],
+  ['Drive down Friday, ocean breakfast Saturday, SENTRI lane home Sunday', 'Llegas el viernes, desayunas frente al mar el sábado y regresas el domingo por el carril SENTRI'],
+  ['Projected 9–12% gross yield with optional on-site management', 'Rendimiento bruto proyectado de 9–12% con administración opcional en sitio'],
+  ['Unlock your Owner Direct Access.', 'Desbloquea tu Acceso Directo al Dueño.'],
+  ['The developer reviews every VIP request personally. Your information is never sold or shared with agencies.', 'El desarrollador revisa personalmente cada solicitud VIP. Tu información nunca se vende ni se comparte con agencias.'],
+  ['Full name', 'Nombre completo'], ['Please enter your full name.', 'Escribe tu nombre completo.'],
+  ['US phone · (619) 555-0142', 'Teléfono de EE. UU. · (619) 555-0142'], ['Enter a valid 10-digit US number.', 'Ingresa un número de EE. UU. de 10 dígitos.'],
+  ['Email', 'Correo electrónico'], ['Enter a valid email address.', 'Ingresa un correo válido.'],
+  ['I agree to be contacted directly by the developer about Sea Houz residences. No spam, unsubscribe anytime.', 'Acepto que el desarrollador me contacte directamente sobre las residencias de Sea Houz. Sin spam, cancela cuando quieras.'],
+  ['VIP access granted', 'Acceso VIP concedido'], ['Welcome,', 'Te damos la bienvenida,'], ['Guest', 'Invitado'],
+  ["Your request skipped the agency line. The owner's office will call you within 48 hours with private pricing.", 'Tu solicitud se saltó la fila de las agencias. La oficina del dueño te llamará en 48 horas con precios privados.'],
+  ['Owner Direct Access', 'Acceso Directo al Dueño'], ['Tier', 'Nivel'],
+  ['VIP Owner Direct Access Code', 'Código VIP de Acceso Directo de Dueño'],
+  ['Member', 'Miembro'], ['Interest', 'Interés'], ['Valid thru', 'Válida hasta'], ['Must-have', 'Indispensable'], ['Goal', 'Objetivo'],
+  ['Copy VIP code', 'Copiar código VIP'], ['Copied ✓', 'Copiado ✓'],
+  ['See it in the owner dashboard →', 'Verlo en el panel del propietario →'], ['Start over', 'Empezar de nuevo'],
+  ['← Back', '← Atrás'], ['Private & encrypted', 'Privado y encriptado'], ['Continue', 'Continuar'], ['Generate my VIP code', 'Generar mi código VIP'],
+  ['© 2026 Sea Houz · Baja Ocean Residences. Direct from the developer.', '© 2026 Sea Houz · Baja Ocean Residences. Directo del desarrollador.'],
+  ['Tijuana – Rosarito Corridor · Baja California, México', 'Corredor Tijuana – Rosarito · Baja California, México'],
+  ['Live ·', 'En vivo ·'], ['· Tijuana–Rosarito Corridor', '· Corredor Tijuana–Rosarito'],
+  ['Intelligence', 'Centro de'], ['Center', 'Inteligencia'],
+  ['Your buyers, your data, your control. Zero brokers in between: every prospect comes straight to you.', 'Tus compradores, tus datos, tu control. Cero inmobiliarias en medio: cada prospecto llega directo a ti.'],
+  ['7 days', '7 días'], ['30 days', '30 días'], ['90 days', '90 días'], ['Export CSV', 'Exportar CSV'],
+  ['Total leads captured', 'Total leads capturados'], ['vs. 1,084 the previous period', 'vs. 1,084 el periodo anterior'],
+  ['Top origin', 'Origen principal'], ['CA, USA', 'CA, EE. UU.'],
+  ['of leads · Orange County follows with 24%', 'de los leads · Orange County le sigue con 24%'],
+  ['Average budget', 'Presupuesto promedio'], ['USD · typical range $520K – $1.2M', 'USD · rango típico $520K – $1.2M'],
+  ['Ready for a call', 'Listos para llamada'], ['🔥 Priority', '🔥 Prioridad'], ['Estimated pipeline', 'Pipeline estimado'], ['· Potential commission', '· Comisión potencial'],
+  ['What buyers are asking for', 'Lo que piden los compradores'], ['Amenity Preferences', 'Preferencias de Amenidades'],
+  ['% of leads who mark it', '% de leads que lo'], ['as must-have', 'marcan como indispensable'],
+  ['Where they come from', 'De dónde vienen'], ['Origin Location', 'Ubicación de Origen'],
+  ['Campaign performance', 'Rendimiento de campaña'], ['Leads per week · USA vs. Mexico', 'Leads por semana · EE. UU. vs. México'],
+  ['USA', 'EE. UU.'], ['Mexico', 'México'],
+  ['Updated 2 min ago', 'Actualizado hace 2 min'], ['Expected CTR', 'CTR esperado'], ['Cost per lead', 'Costo por lead'], ['Generate new insight', 'Generar nuevo insight'],
+  ['Direct CRM · No middlemen', 'CRM Directo · Sin intermediarios'], ['VIP Leads Ready for a Direct Call', 'Leads VIP Listos para Llamada Directa'],
+  ['All', 'Todos'], ['🔥 Hot', '🔥 Calientes'],
+  ['Lead', 'Prospecto'], ['Origin', 'Origen'], ['Budget', 'Presupuesto'], ['Status', 'Estado'], ['VIP code', 'Código VIP'],
+  ['Protected data · Exclusive property of the developer', 'Datos protegidos · Propiedad exclusiva del desarrollador'],
+  ['Sea Houz · Direct-to-Owner platform · Demo data prototype', 'Sea Houz · Plataforma Direct-to-Owner · Prototipo con datos de demostración'],
+  ['Your clients are yours. Always.', 'Tus clientes son tuyos. Siempre.'], ['New lead', 'Nuevo lead']
+].concat(Object.entries(ES));
+const nrm = x => x.replace(/\s+/g, ' ').trim();
+const EN2ES = new Map(), ES2EN = new Map();
+PAIRS.forEach(([en, es]) => { EN2ES.set(nrm(en), es); ES2EN.set(nrm(es), en); });
+
+function translateDom(root = document.body) {
+  const map = LANG === 'es' ? EN2ES : ES2EN;
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = []; let n;
+  while ((n = w.nextNode())) { if (!n.parentElement || n.parentElement.closest('script,style')) continue; nodes.push(n); }
+  nodes.forEach(node => {
+    const k = nrm(node.nodeValue); if (!k) return;
+    const v = map.get(k);
+    if (v !== undefined && v !== k) node.nodeValue = node.nodeValue.replace(/\S[\s\S]*\S|\S/, () => v);
+  });
+}
+
+function refreshChartLang() {
+  if (charts.amenity) { charts.amenity.data.labels = amenityData.map(nm); charts.amenity.update('none'); }
+  if (charts.origin) { charts.origin.data.labels = originData.map(nm); charts.origin.update('none'); }
+  if (charts.trend) {
+    charts.trend.data.labels = weekLabels();
+    charts.trend.data.datasets[0].label = L('USA', 'EE. UU.'); charts.trend.data.datasets[1].label = L('Mexico', 'México');
+    charts.trend.update('none');
+  }
+}
+
+function setLang(l) {
+  LANG = l;
+  try { localStorage.setItem('shz-lang', l); } catch (e) {}
+  document.documentElement.lang = l;
+  const b = document.getElementById('langBtn'); b.dataset.lang = l; b.setAttribute('aria-checked', l === 'es');
+  document.title = L('Sea Houz · Baja Ocean Residences', 'Sea Houz · Residencias Baja Ocean');
+  translateDom();
+  updateNav(); renderCRM(); renderLegend(); refreshChartLang(); tickClock();
+  const ins = document.getElementById('insightText');
+  clearTimeout(typingTimer); ins.classList.remove('typing'); ins.style.whiteSpace = '';
+  if (document.getElementById('view-owner').classList.contains('active') || ins.innerHTML) ins.innerHTML = INS[l][insightIdx];
+  document.getElementById('copyBtn').textContent = L('Copy VIP code', 'Copiar código VIP');
+  positionPill();
+}
+function toggleLang() { setLang(LANG === 'en' ? 'es' : 'en'); }
+
+/* reveal stagger (replays every time a view is shown) */
+document.querySelectorAll('#buyerHero > *, #quizCard, #view-owner section > *').forEach(el => {
+  const sibs = [...el.parentElement.children]; el.classList.add('rv'); el.style.setProperty('--i', sibs.indexOf(el) + (el.id === 'quizCard' ? 3 : 0));
+});
 
 /* init */
 updateNav();
 requestAnimationFrame(positionPill);
 document.fonts && document.fonts.ready.then(positionPill);
+let _l0 = 'en'; try { _l0 = localStorage.getItem('shz-lang') === 'es' ? 'es' : 'en'; } catch (e) {}
+setLang(_l0);
 </script>
 </body>
 </html>
