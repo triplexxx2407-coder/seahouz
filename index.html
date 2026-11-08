@@ -125,8 +125,7 @@
   .wm-b { font-weight: 700; color: #f4f1ea; }
   html[data-theme="light"] .wm-b { color: #14213d; }
   .hero-bg { position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; background: #05070c; }
-  .hero-bg iframe { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); border: 0; pointer-events: none; opacity: 0; transition: opacity 1.2s; }
-  .hero-bg iframe.on { opacity: 1; }
+  .hero-bg video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
   .hero-bg .ov { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,9,15,.72), rgba(7,9,15,.82) 60%, rgba(7,9,15,.97)); }
   html[data-theme="light"] .hero-bg { background: #f4efe6; }
   html[data-theme="light"] .hero-bg .ov { background: linear-gradient(180deg, rgba(250,247,240,.80), rgba(250,247,240,.88) 60%, rgba(250,247,240,.98)); }
@@ -397,7 +396,7 @@
 <!-- ================= VIEW 1: BUYER ================= -->
 <main id="view-buyer" class="view active">
   <div class="relative">
-  <div class="hero-bg" aria-hidden="true"><iframe id="heroVid" title="" tabindex="-1" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe><div class="ov"></div></div>
+  <div class="hero-bg" aria-hidden="true"><video id="heroVid" autoplay muted loop playsinline preload="auto" poster="hero-poster.jpg" disablepictureinpicture disableremoteplayback tabindex="-1"><source src="hero.mp4" type="video/mp4"></video><div class="ov"></div></div>
   <section class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-16 pb-16">
     <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
 
@@ -1692,16 +1691,13 @@ document.getElementById('invChart').addEventListener('click', e => {
   const c = e.target.closest('[data-unit]'); if (c) openUnit(c.dataset.unit);
 });
 
-/* Hero background video: autoplay, muted, loop, no interaction */
+/* Hero background video: autoplay, muted, loop, no interaction. Falls back to a photo if the file can't load. */
 (() => {
-  const ID = 'L25Q0mWi9Tk', f = document.getElementById('heroVid'), box = f.parentElement;
-  const fit = () => { const w = box.clientWidth, h = box.clientHeight; f.style.width = Math.max(w, h * 16 / 9) + 'px'; f.style.height = Math.max(h, w * 9 / 16) + 'px'; };
-  new ResizeObserver(fit).observe(box); fit();
-  // Inside an embedded viewer (e.g. the artifact preview) YouTube is blocked, so use a photo instead.
-  let framed = false; try { framed = window.top !== window.self; } catch (e) { framed = true; }
-  if (framed) { box.style.background = `#05070c url(${PHOTOS.p3}) center/cover no-repeat`; f.remove(); return; }
-  f.addEventListener('load', () => setTimeout(() => f.classList.add('on'), 1500));
-  f.src = `https://www.youtube-nocookie.com/embed/${ID}?autoplay=1&mute=1&loop=1&playlist=${ID}&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3`;
+  const v = document.getElementById('heroVid'), box = v.parentElement;
+  const fallback = () => { box.style.background = `#05070c url(${PHOTOS.p3}) center/cover no-repeat`; v.remove(); };
+  v.muted = true; v.addEventListener('error', fallback, true);
+  v.querySelector('source').addEventListener('error', fallback);
+  const p = v.play(); if (p && p.catch) p.catch(() => {});
 })();
 
 /* =========================================================
