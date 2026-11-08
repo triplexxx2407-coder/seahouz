@@ -744,7 +744,7 @@
 
     <div class="grid lg:grid-cols-12 gap-4 mt-4">
       <!-- Trend -->
-      <div class="lg:col-span-8 glass rounded-[22px] p-5 sm:p-7">
+      <div class="lg:col-span-12 glass rounded-[22px] p-5 sm:p-7">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div class="tag text-mist">Rendimiento de campaña</div>
@@ -758,25 +758,6 @@
         <div class="relative mt-5" style="height: 260px"><canvas id="trendChart"></canvas></div>
       </div>
 
-      <!-- AI insight -->
-      <div class="lg:col-span-4 rounded-[22px] p-6 sm:p-7 relative overflow-hidden keep-dark" style="background: radial-gradient(120% 90% at 100% 0%, rgba(201,164,92,.22), transparent 55%), linear-gradient(160deg, #10203f, #0a1224 70%); border: 1px solid rgba(201,164,92,.35);">
-        <div class="absolute -bottom-16 -right-10 w-56 h-56 rounded-full blur-2xl" style="background: rgba(91,127,208,.25)"></div>
-        <div class="relative">
-          <div class="flex items-center justify-between">
-            <div class="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-3 py-1 text-[.64rem] tracking-[.2em] uppercase text-gold2">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
-              AI &amp; Data Insight
-            </div>
-            <span class="text-[.65rem] text-mist">Actualizado hace 2 min</span>
-          </div>
-          <p class="mt-5 text-[1.02rem] leading-relaxed text-[#eef0f4] min-h-[150px]" id="insightText"></p>
-          <div class="mt-5 grid grid-cols-2 gap-3">
-            <div class="rounded-xl bg-white/5 border border-white/10 p-3"><div class="tag text-mist">CTR esperado</div><div class="text-lg font-semibold text-gold2 mt-1">+31%</div></div>
-            <div class="rounded-xl bg-white/5 border border-white/10 p-3"><div class="tag text-mist">Costo por lead</div><div class="text-lg font-semibold text-emerald-300 mt-1">−22%</div></div>
-          </div>
-          <button class="btn-gold w-full mt-5" onclick="regenInsight()">Generar nuevo insight</button>
-        </div>
-      </div>
     </div>
 
     <!-- CRM -->
@@ -1168,7 +1149,6 @@ function loadOwner() {
   setKpis(1);
   animateRows = true; renderCRM(); setTimeout(() => animateRows = false, 1800);
   renderLegend();
-  insightIdx = 0; typeInsight(INS[LANG][0]);
 }
 
 function buildCharts() {
@@ -1289,36 +1269,6 @@ document.querySelectorAll('[data-range]').forEach(b => b.addEventListener('click
   }
 }));
 
-/* AI insight */
-const INS = {
-  es: [
-    '💡 <b class="text-gold2">Tendencia de la semana:</b> El 73% busca acabados de baño y vista al mar. <br/><br/><b class="text-gold2">Sugerencia para tus anuncios:</b> Enfoca la publicidad en fotos de los baños y las terrazas.',
-    '💡 <b class="text-gold2">Señal de inversión:</b> Los leads de Scottsdale y Las Vegas eligen “Inversión en Airbnb” 2.4× más que el promedio. <br/><br/><b class="text-gold2">Sugerencia:</b> Lanza un anuncio con las terrazas de atardecer y amanecer y el potencial de renta vacacional.',
-    '💡 <b class="text-gold2">Momento de cierre:</b> Los leads de San Diego responden 3× mejor si se les llama en menos de 2 horas. <br/><br/><b class="text-gold2">Sugerencia:</b> Llama hoy a los 5 leads “Caliente” antes de las 6 pm hora del Pacífico.',
-    '💡 <b class="text-gold2">Modelos más pedidos:</b> Houz D y Houz E concentran casi la mitad de los leads de Orange County y San Diego. <br/><br/><b class="text-gold2">Sugerencia:</b> Muestra la cocina con isla y la terraza del atardecer en Instagram y YouTube para Newport e Irvine.'
-  ],
-  en: [
-    '💡 <b class="text-gold2">Trend of the week:</b> 73% want upscale bathroom finishes and an ocean view. <br/><br/><b class="text-gold2">Suggestion for your ads:</b> Focus your advertising on photos of the bathrooms and terraces.',
-    '💡 <b class="text-gold2">Investment signal:</b> Leads from Scottsdale and Las Vegas pick “Airbnb investment” 2.4× more than average. <br/><br/><b class="text-gold2">Suggestion:</b> Launch an ad featuring the sunset and sunrise terraces and the vacation-rental potential.',
-    '💡 <b class="text-gold2">Closing window:</b> San Diego leads respond 3× better when called within 2 hours. <br/><br/><b class="text-gold2">Suggestion:</b> Call today\'s 5 “Hot” leads before 6 pm Pacific time.',
-    '💡 <b class="text-gold2">Most requested models:</b> Houz D and Houz E make up almost half of the leads from Orange County and San Diego. <br/><br/><b class="text-gold2">Suggestion:</b> Show the island kitchen and the sunset terrace on Instagram and YouTube for Newport and Irvine.'
-  ]
-};
-let insightIdx = 0, typingTimer;
-function typeInsight(html) {
-  const el = document.getElementById('insightText');
-  clearTimeout(typingTimer); el.classList.add('typing');
-  // type out plain text, then swap to rich html
-  const tmp = document.createElement('div'); tmp.innerHTML = html.replace(/<br\/?>/g, '\n');
-  const text = tmp.textContent; let i = 0;
-  const step = () => {
-    i += 2; el.textContent = text.slice(0, i); el.style.whiteSpace = 'pre-line';
-    if (i < text.length) typingTimer = setTimeout(step, 14);
-    else { el.style.whiteSpace = ''; el.innerHTML = html; el.classList.remove('typing'); }
-  };
-  step();
-}
-function regenInsight() { insightIdx = (insightIdx + 1) % INS[LANG].length; typeInsight(INS[LANG][insightIdx]); }
 
 function exportCSV() {
   const head = L(['Name', 'Origin', 'Phone', 'Email', 'Condo', 'Interest', 'Amenity', 'Goal'], ['Nombre', 'Origen', 'Telefono', 'Email', 'Condominio', 'Interes', 'Amenidad', 'Objetivo']);
@@ -1770,7 +1720,7 @@ const PAIRS = [
   ['Where they come from', 'De dónde vienen'], ['Origin Location', 'Ubicación de Origen'],
   ['Campaign performance', 'Rendimiento de campaña'], ['Leads per week · USA vs. Mexico', 'Leads por semana · EE. UU. vs. México'],
   ['USA', 'EE. UU.'], ['Mexico', 'México'],
-  ['Updated 2 min ago', 'Actualizado hace 2 min'], ['Expected CTR', 'CTR esperado'], ['Cost per lead', 'Costo por lead'], ['Generate new insight', 'Generar nuevo insight'],
+  
   ['Direct CRM · No middlemen', 'CRM Directo · Sin intermediarios'], ['Registered Leads', 'Leads Registrados'],
   ['All', 'Todos'], ['🔥 Hot', '🔥 Calientes'],
   ['Lead', 'Prospecto'], ['Origin', 'Origen'], ['Budget', 'Presupuesto'], ['Status', 'Estado'], ['ID', 'ID'],
@@ -1812,9 +1762,6 @@ function setLang(l) {
   document.title = L('Sea Houz · Baja Ocean Residences', 'Sea Houz · Residencias Baja Ocean');
   translateDom();
   updateNav(); renderCRM(); renderLegend(); refreshChartLang(); tickClock(); renderInventory(); renderGalleryAmenities(); if (lbIdx >= 0) showLb();
-  const ins = document.getElementById('insightText');
-  clearTimeout(typingTimer); ins.classList.remove('typing'); ins.style.whiteSpace = '';
-  if (document.getElementById('view-owner').classList.contains('active') || ins.innerHTML) ins.innerHTML = INS[l][insightIdx];
   if (lastName) updateWA();
   positionPill();
 }
