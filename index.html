@@ -1752,13 +1752,23 @@ document.getElementById('invChart').addEventListener('click', e => {
   const c = e.target.closest('[data-unit]'); if (c) openUnit(c.dataset.unit);
 });
 
-/* Hero background video: autoplay, muted, loop, no interaction. Falls back to a photo if the file can't load. */
+/* Hero background video: autoplay, muted, loop, no interaction. Works around mobile autoplay blocks. */
 (() => {
   const v = document.getElementById('heroVid'), box = v.parentElement;
+  box.style.background = '#05070c url(hero-poster.jpg) center/cover no-repeat';
   const fallback = () => { box.style.background = `#05070c url(${PHOTOS.p3}) center/cover no-repeat`; v.remove(); };
-  v.muted = true; v.addEventListener('error', fallback, true);
+  // iOS/Android need these set as live properties as well as attributes
+  v.muted = true; v.defaultMuted = true; v.loop = true; v.playsInline = true; v.controls = false;
+  v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('webkit-playsinline', '');
+  const play = () => { if (!v.isConnected || !v.paused) return; const p = v.play(); if (p && p.catch) p.catch(() => {}); };
+  v.addEventListener('error', fallback, true);
   v.querySelector('source').addEventListener('error', fallback);
-  const p = v.play(); if (p && p.catch) p.catch(() => {});
+  v.addEventListener('loadeddata', play); v.addEventListener('canplay', play);
+  // retry on first interaction, on tab becoming visible, and every few seconds while still paused
+  ['touchstart', 'pointerdown', 'click', 'scroll', 'keydown'].forEach(ev => window.addEventListener(ev, play, { once: false, passive: true }));
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) play(); });
+  let tries = 0; const iv = setInterval(() => { if (!v.isConnected || !v.paused || ++tries > 12) return clearInterval(iv); play(); }, 1500);
+  v.load(); play();
 })();
 
 /* =========================================================
